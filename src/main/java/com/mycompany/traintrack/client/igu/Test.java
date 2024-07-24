@@ -1,21 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package com.mycompany.traintrack.client.igu;
 
 import javax.swing.*;
 import java.awt.*;
 
-/**
- *
- * @author aziel
- */
+
 public class Test extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Test
-     */
+
     public Test() {
         initComponents();
         initStyles();
@@ -29,6 +21,7 @@ public class Test extends javax.swing.JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         btnSubmit.setBackground(Color.darkGray);
         btnSubmit.setForeground(Color.white);
+        lblTitle.setForeground(Color.BLUE);
     }
     
     @SuppressWarnings("unchecked")
