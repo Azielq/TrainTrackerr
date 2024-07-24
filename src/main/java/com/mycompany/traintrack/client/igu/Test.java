@@ -22,6 +22,7 @@ public class Test extends javax.swing.JFrame {
         btnSubmit.setBackground(Color.darkGray);
         btnSubmit.setForeground(Color.white);
         lblTitle.setForeground(Color.BLUE);
+        setResizable(true);
         txtHello.setEditable(true);
     }
     
