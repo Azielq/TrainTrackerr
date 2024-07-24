@@ -23,6 +23,7 @@ public class Test extends javax.swing.JFrame {
         btnSubmit.setForeground(Color.white);
         lblTitle.setForeground(Color.BLUE);
         setResizable(true);
+        txtHello.setEditable(true);
     }
     
     @SuppressWarnings("unchecked")
