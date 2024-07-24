@@ -4,7 +4,6 @@ package com.mycompany.traintrack.client.igu;
 import javax.swing.*;
 import java.awt.*;
 
-
 public class Test extends javax.swing.JFrame {
 
 
@@ -21,7 +20,6 @@ public class Test extends javax.swing.JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         btnSubmit.setBackground(Color.darkGray);
         btnSubmit.setForeground(Color.white);
-        lblTitle.setForeground(Color.BLUE);
         setResizable(true);
         txtHello.setEditable(true);
     }
