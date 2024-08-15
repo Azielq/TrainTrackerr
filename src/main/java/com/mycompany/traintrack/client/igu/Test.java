@@ -3,6 +3,9 @@ package com.mycompany.traintrack.client.igu;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Color;
+import java.awt.Insets;
+import javax.swing.UIManager;
 
 public class Test extends javax.swing.JFrame {
 
@@ -96,7 +99,7 @@ public class Test extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtHelloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtHelloActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_txtHelloActionPerformed
 
     private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
