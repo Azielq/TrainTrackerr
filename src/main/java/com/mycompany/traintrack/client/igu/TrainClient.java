@@ -3,11 +3,15 @@ package com.mycompany.traintrack.client.igu;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import javax.swing.Timer;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.mycompany.traintrack.server.logica.ServerThread;
 
 
 public class TrainClient extends javax.swing.JFrame {
@@ -29,7 +33,7 @@ public class TrainClient extends javax.swing.JFrame {
         initStyles();
         initContent();
         this.setTitle("TrainTrack - Cliente");
-        svgLogo.setSvgImage("logo.svg", 250, 125);
+        // svgLogo.setSvgImage("logo.svg", 250, 125);
     }
 
     public void initStyles() {
@@ -110,7 +114,7 @@ public class TrainClient extends javax.swing.JFrame {
         btnTrain2 = new javax.swing.JButton();
         btnTrain3 = new javax.swing.JButton();
         btnTrain4 = new javax.swing.JButton();
-        svgLogo = new com.mycompany.sneaksapp.igu.SVGImage();
+        // svgLogo = new com.mycompany.sneaksapp.igu.SVGImage();
         lblReloj = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         pnlTrain = new javax.swing.JPanel();
@@ -130,6 +134,7 @@ public class TrainClient extends javax.swing.JFrame {
         btnTrain1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnTrain1ActionPerformed(evt);
+                System.out.println("test");
             }
         });
 
@@ -215,7 +220,7 @@ public class TrainClient extends javax.swing.JFrame {
             }
         });
 
-        svgLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        // svgLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         lblReloj.setFont(new java.awt.Font("Segoe UI Light", 0, 20)); // NOI18N
         lblReloj.setForeground(new java.awt.Color(153, 153, 153));
@@ -253,7 +258,7 @@ public class TrainClient extends javax.swing.JFrame {
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(45, 45, 45))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlMenuLayout.createSequentialGroup()
-                        .addComponent(svgLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        //  .addComponent(svgLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(67, 67, 67))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlMenuLayout.createSequentialGroup()
                         .addComponent(lblReloj, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -267,7 +272,7 @@ public class TrainClient extends javax.swing.JFrame {
             pnlMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlMenuLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addComponent(svgLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
+                // .addComponent(svgLog, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblReloj, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -339,6 +344,26 @@ public class TrainClient extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+
+   
+   
+
+
+
+
+
+
+    // -----------------handling button events-------------------------->
+
+
+
+
+
+
+    
+    
+
+
     private void btnTrain1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrain1ActionPerformed
 //        Train1Running = true;
 //        Train2Running = false;
@@ -354,6 +379,11 @@ public class TrainClient extends javax.swing.JFrame {
         btnTrain2.setForeground(Color.decode("#FF5126"));
         btnTrain3.setForeground(Color.decode("#FF5126"));
         btnTrain4.setForeground(Color.decode("#FF5126"));
+
+        System.out.println("the button 1 its working ");
+        // calling the function to receive the data through the button
+        return_server_data();
+
     }//GEN-LAST:event_btnTrain1ActionPerformed
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
@@ -394,6 +424,8 @@ public class TrainClient extends javax.swing.JFrame {
         btnTrain2.setForeground(Color.decode("#ffffff"));
         btnTrain3.setForeground(Color.decode("#FF5126"));
         btnTrain4.setForeground(Color.decode("#FF5126"));
+
+        System.out.println("the button 3 its working ");
     }//GEN-LAST:event_btnTrain2ActionPerformed
 
     private void btnTrain3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrain3ActionPerformed
@@ -411,6 +443,9 @@ public class TrainClient extends javax.swing.JFrame {
         btnTrain2.setForeground(Color.decode("#FF5126"));
         btnTrain3.setForeground(Color.decode("#ffffff"));
         btnTrain4.setForeground(Color.decode("#FF5126"));
+        
+        txaConsole.setText("");
+        txaConsole.append("test");
     }//GEN-LAST:event_btnTrain3ActionPerformed
 
     private void btnTrain4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrain4ActionPerformed
@@ -431,6 +466,69 @@ public class TrainClient extends javax.swing.JFrame {
     }//GEN-LAST:event_btnTrain4ActionPerformed
 
 
+
+
+
+
+
+
+ // -----------------end handling button events-------------------------->
+
+
+
+
+ // -----------------Receiving data from the server-------------------------->
+
+
+    private void return_server_data(){
+        ServerThread serverThread = new ServerThread();
+        serverThread.start();
+
+        new Thread(()->{
+            try {
+                // Creating the socket
+                DatagramSocket socket = new DatagramSocket(7000);
+                byte[] byteMessage = new byte[200];
+                String message = new String(byteMessage);
+                String comMessage = "";
+
+                DatagramPacket pack = new DatagramPacket(byteMessage, 200);
+                DatagramPacket envPacket = new DatagramPacket(byteMessage, 200);
+                int port;
+                InetAddress address;
+                byte[] byteMessage2 = new byte[200];
+
+        
+        //-----------> Initializing the cicle who its going to stop the thread who sending the  message        
+        
+                int running = 0;
+
+                do {
+                    Thread.sleep(500);
+                    socket.receive(pack);
+                    message = new String(byteMessage);
+                    txaConsole.append("\n" + message);
+
+                    //checking out if the message comes right
+                    System.out.println(message);    
+
+                    port = pack.getPort();
+                    address = pack.getAddress();
+                    comMessage = "";
+                    byteMessage2 = comMessage.getBytes();
+                    envPacket = new DatagramPacket(byteMessage2, comMessage.length(), address, port);
+                    socket.send(envPacket);
+                    running++;
+                } while (running <= 10);
+
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+            }
+            
+        }).start();
+    }
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnStart;
     private javax.swing.JButton btnStop;
@@ -447,7 +545,7 @@ public class TrainClient extends javax.swing.JFrame {
     private javax.swing.JPanel pnlBg;
     private javax.swing.JPanel pnlMenu;
     private javax.swing.JPanel pnlTrain;
-    private com.mycompany.sneaksapp.igu.SVGImage svgLogo;
+    // private com.mycompany.sneaksapp.igu.SVGImage svgLogo;
     private javax.swing.JTextArea txaConsole;
     // End of variables declaration//GEN-END:variables
 }
