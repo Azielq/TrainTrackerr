@@ -56,7 +56,7 @@ public class pnlTrainMap extends javax.swing.JPanel {
         // Dibujar los iconos SVG en el panel
         // Ejemplo de cómo dibujar los iconos en posiciones específicas
         trainIcons[0].paintIcon(this, g, 42, 298);  // Dibuja Train1.svg en (100, 100)
-        trainIcons[1].paintIcon(this, g, 855, 235);  // Dibuja Train2.svg en (200, 200)
+        trainIcons[1].paintIcon(this, g, 855, 237);  // Dibuja Train2.svg en (200, 200)
         trainIcons[2].paintIcon(this, g, 480, 237);  // Dibuja Train3.svg en (300, 300)
         trainIcons[3].paintIcon(this, g, 480, 239);  // Dibuja Train4.svg en (400, 400)
     }
