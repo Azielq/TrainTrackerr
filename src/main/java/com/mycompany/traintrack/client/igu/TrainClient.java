@@ -113,7 +113,7 @@ public class TrainClient extends javax.swing.JFrame {
         svgLogo = new com.mycompany.sneaksapp.igu.SVGImage();
         lblReloj = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        btnStop1 = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
         pnlTrain = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -223,15 +223,15 @@ public class TrainClient extends javax.swing.JFrame {
         lblReloj.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblReloj.setText("Waiting Server...");
 
-        btnStop1.setBackground(new java.awt.Color(255, 255, 255));
-        btnStop1.setFont(new java.awt.Font("Segoe UI Light", 0, 10)); // NOI18N
-        btnStop1.setForeground(new java.awt.Color(255, 30, 38));
-        btnStop1.setText("Reset");
-        btnStop1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 30, 38)));
-        btnStop1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnStop1.addActionListener(new java.awt.event.ActionListener() {
+        btnReset.setBackground(new java.awt.Color(255, 255, 255));
+        btnReset.setFont(new java.awt.Font("Segoe UI Light", 0, 10)); // NOI18N
+        btnReset.setForeground(new java.awt.Color(255, 30, 38));
+        btnReset.setText("Reset");
+        btnReset.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 30, 38)));
+        btnReset.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnStop1ActionPerformed(evt);
+                btnResetActionPerformed(evt);
             }
         });
 
@@ -278,7 +278,7 @@ public class TrainClient extends javax.swing.JFrame {
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pnlMenuLayout.createSequentialGroup()
                         .addGap(182, 182, 182)
-                        .addComponent(btnStop1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         pnlMenuLayout.setVerticalGroup(
@@ -295,7 +295,7 @@ public class TrainClient extends javax.swing.JFrame {
                     .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnStop1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -450,15 +450,15 @@ public class TrainClient extends javax.swing.JFrame {
         btnTrain4.setForeground(Color.decode("#ffffff"));
     }//GEN-LAST:event_btnTrain4ActionPerformed
 
-    private void btnStop1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStop1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnStop1ActionPerformed
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        
+    }//GEN-LAST:event_btnResetActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnReset;
     private javax.swing.JButton btnStart;
     private javax.swing.JButton btnStop;
-    private javax.swing.JButton btnStop1;
     private javax.swing.JButton btnTrain1;
     private javax.swing.JButton btnTrain2;
     private javax.swing.JButton btnTrain3;
