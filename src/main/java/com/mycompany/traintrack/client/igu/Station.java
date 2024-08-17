@@ -19,15 +19,25 @@ public enum Station {
     La_Corte(480, 276),
     //----------------------Belén-Atlántico
     
-    //Centro
+    //Central
     Estación_Atlántico(480, 237),
-    //Centro
+    //Central
     
     //---------------------Heredia-Atlántico
+    Heredia(362, 107),
+    Miraflores(388, 135),
+    Santa_Rosa(412, 162),
+    Colima(436, 189),
+    Calle_Blancos(457, 210),
     //---------------------Heredia-Atlántico
     
     
     //---------------------Alajuela-Heredia
+    Alajuela(136, 107),
+    Bulevar_Aeropuerto(185, 107),
+    Río_Segundo(223, 107),
+    San_Joaquín(272, 107),
+    San_Francisco(320, 107),
     //---------------------Alajuela-Heredia
     
     

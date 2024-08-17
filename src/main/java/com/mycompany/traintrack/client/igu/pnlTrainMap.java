@@ -1,12 +1,8 @@
 package com.mycompany.traintrack.client.igu;
 
 import java.awt.Graphics;
-import java.awt.Image;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-
 import org.imgscalr.Scalr;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -15,7 +11,6 @@ import java.awt.image.BufferedImage;
 public class pnlTrainMap extends javax.swing.JPanel {
 
     private BufferedImage bg;
-    private FlatSVGIcon bgIcon;
     //private Image scaledImage;
     private FlatSVGIcon[] trainIcons;
     //private Train[] trains;
