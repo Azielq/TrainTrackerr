@@ -70,4 +70,9 @@ public enum Station {
     public int getY() {
         return y;
     }
+
+    // Método para depurar las coordenadas de cada estación
+    public void printCoordinates() {
+        System.out.println(this.name() + ": (" + x + ", " + y + ")");
+    }
 }

@@ -4,25 +4,23 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import javax.swing.Timer;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.mycompany.traintrack.client.igu.trains.Train1;
+import com.mycompany.traintrack.client.igu.trains.Train2;
+import com.mycompany.traintrack.client.igu.trains.Train3;
+import com.mycompany.traintrack.client.igu.trains.Train4;
+
 
 
 public class TrainClient extends javax.swing.JFrame {
 
-//    private boolean Train1Running = false;
-//    private boolean Train2Running = false;
-//    private boolean Train3Running = false;
-//    private boolean Train4Running = false;
-//
-//    private boolean Start = false;
-//    private boolean Stop = false;
-    
+    private pnlTrainMap trainMap;
     private Timer relojTimer;
     private Calendar calendario;
-    
 
     public TrainClient() {
         initComponents();
@@ -35,41 +33,80 @@ public class TrainClient extends javax.swing.JFrame {
     public void initStyles() {
         FlatSVGIcon icon = new FlatSVGIcon("1.svg");
         setIconImage(icon.getImage());
-        
-
-
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         txaConsole.setEditable(false);
         setResizable(false);
-        
-        
-        
-        
     }
 
     public void initContent() {
-        pnlTrainMap mapPanel = new pnlTrainMap();
-        mapPanel.setSize(950, 730);
-        mapPanel.setLocation(0, 0);
-
-        pnlTrain.removeAll(); // Remueve cualquier contenido existente en el panel
-        pnlTrain.add(mapPanel); // Añade el nuevo panel
-        pnlTrain.revalidate(); // Reorganiza el layout
-        pnlTrain.repaint(); // Redibuja el panel para que el cambio sea visible
-        
+        try {
+            trainMap = new pnlTrainMap();
+            System.out.println("trainMap ha sido inicializado: " + (trainMap != null)); // Esto debe imprimir 'true'
+        } catch (Exception e) {
+            System.err.println("Ocurrió un error al inicializar trainMap: " + e.getMessage());
+            e.printStackTrace();
+        }
+    
+        if (trainMap != null) {
+            trainMap.setSize(950, 730);
+            trainMap.setLocation(0, 0);
+            pnlTrain.removeAll();
+            pnlTrain.add(trainMap);
+            pnlTrain.revalidate();
+            pnlTrain.repaint();
+        }
     }
 
+    private void startTrains() {
+        Train train1 = new Train1(trainMap, Station.Belén, "Train1", 0);
+        Train train2 = new Train2(trainMap, Station.Paraíso, "Train2", 1);
+        Train train3 = new Train3(trainMap, Station.Estación_Atlántico, "Train3", 2);
+        Train train4 = new Train4(trainMap, Station.Estación_Atlántico, "Train4", 3);
+    
+        TrainRunnable train1Runnable = new TrainRunnable(train1, Arrays.asList(
+            Station.Belén, Station.Pedregal, Station.Metrópolis, Station.Demasa,
+            Station.Pecosa, Station.Pavas_Centro, Station.Jacks, Station.AyA,
+            Station.La_Salle, Station.Contraloría, Station.Barrio_Cuba,
+            Station.Estación_Pacífico, Station.Plaza_Víquez, Station.La_Corte,
+            Station.Estación_Atlántico, Station.UCR, Station.U_Latina,
+            Station.Freses, Station.UACA, Station.Tres_Ríos,
+            Station.Cartago, Station.Los_Ángeles, Station.Oreamuno, Station.Paraíso),
+            Station.Estación_Atlántico, train2, "20:00");
+    
+        TrainRunnable train2Runnable = new TrainRunnable(train2, Arrays.asList(
+            Station.Paraíso, Station.Oreamuno, Station.Los_Ángeles,
+            Station.Cartago, Station.Tres_Ríos, Station.UACA, Station.Freses,
+            Station.U_Latina, Station.UCR, Station.Estación_Atlántico,
+            Station.La_Corte, Station.Plaza_Víquez, Station.Estación_Pacífico,
+            Station.Barrio_Cuba, Station.Contraloría, Station.La_Salle, Station.AyA,
+            Station.Jacks, Station.Pavas_Centro, Station.Pecosa,
+            Station.Demasa, Station.Metrópolis, Station.Pedregal, Station.Belén),
+            Station.Estación_Atlántico, train1, "20:00");
+    
+        TrainRunnable train3Runnable = new TrainRunnable(train3, Arrays.asList(
+            Station.Estación_Atlántico, Station.Calle_Blancos, Station.Colima,
+            Station.Santa_Rosa, Station.Miraflores, Station.Heredia, Station.San_Francisco,
+            Station.San_Joaquín, Station.Río_Segundo, Station.Bulevar_Aeropuerto,
+            Station.Alajuela), Station.Heredia, train4, "18:00");
+    
+        TrainRunnable train4Runnable = new TrainRunnable(train4, Arrays.asList(
+            Station.Alajuela, Station.Bulevar_Aeropuerto, Station.Río_Segundo,
+            Station.San_Joaquín, Station.San_Francisco, Station.Heredia, Station.Miraflores,
+            Station.Santa_Rosa, Station.Colima, Station.Calle_Blancos, Station.Estación_Atlántico),
+            Station.Heredia, train3, "18:00");
+    
+        new Thread(train1Runnable).start();
+        new Thread(train2Runnable).start();
+        new Thread(train3Runnable).start();
+        new Thread(train4Runnable).start();
+    }
 
     private void startClock() {
-
-        // Configuramos el Timer para que actualice el JLabel cada segundo (equivalente a 1 minuto en el reloj)
         relojTimer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Incrementamos el calendario en 1 minuto
-                calendario.add(Calendar.MINUTE, 1);
-                // Actualizamos el JLabel con el nuevo tiempo
+                calendario.add(Calendar.MINUTE, 1); // 1 segundo = 1 minuto
                 SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
                 lblReloj.setText(formatoHora.format(calendario.getTime()));
             }
@@ -77,19 +114,16 @@ public class TrainClient extends javax.swing.JFrame {
     }
 
     private void resetClock() {
-        // Inicializamos el calendario con las 5:00 AM
         calendario = Calendar.getInstance();
         calendario.set(Calendar.HOUR_OF_DAY, 5);
         calendario.set(Calendar.MINUTE, 0);
         calendario.set(Calendar.SECOND, 0);
         calendario.set(Calendar.MILLISECOND, 0);
         
-        // Iniciamos o reiniciamos el Timer
         if (relojTimer != null) {
             relojTimer.stop();
         }
         startClock();
-
         relojTimer.start();
     }
 
@@ -391,6 +425,12 @@ public class TrainClient extends javax.swing.JFrame {
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
         resetClock();
 
+        // Asegura de que trainMap esté inicializado antes de iniciar los trenes
+    if (trainMap != null) {
+        startTrains();
+    } else {
+        System.err.println("trainMap es nulo, no se pueden iniciar los trenes.");
+    }
 
         btnStop.setBackground(Color.decode("#FFFFFF"));
         btnStart.setBackground(Color.decode("#30BA30"));
