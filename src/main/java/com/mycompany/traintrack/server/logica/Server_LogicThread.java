@@ -1,16 +1,17 @@
-package com.mycompany.traintrack.server.controllers;
+package com.mycompany.traintrack.server.logica;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class ServerThread  extends Thread{
+public class Server_LogicThread  extends Thread{
 
     public void run(){
         int running = 0;
         // int running2 = 0;
+        int[] listcoordinates = {1, 2, 3};
 
-        while (running <= 10) {
+        while (running <= 5) {
             try {
                 Thread.sleep(200);
 
@@ -29,8 +30,12 @@ public class ServerThread  extends Thread{
                 DatagramPacket servPacket;
                 byte[] pickupbytes_server;
 
-                String message = "Train one";
-
+                String message = "Test for train one";
+                int num;
+                // for(int numbers: listcoordinates){
+                //     num = numbers;
+                // }
+                // String messagenum = String.valueOf(num);
                 do {
                     Thread.sleep(200);
                     //we converted the message to a bytes for the transfer

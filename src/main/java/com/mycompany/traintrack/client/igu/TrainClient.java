@@ -7,11 +7,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import javax.swing.Timer;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import com.mycompany.traintrack.server.logica.ServerThread;
+import com.mycompany.traintrack.server.logica.Server_LogicThread;
 
 
 public class TrainClient extends javax.swing.JFrame {
@@ -382,7 +383,11 @@ public class TrainClient extends javax.swing.JFrame {
 
         System.out.println("the button 1 its working ");
         // calling the function to receive the data through the button
-        return_server_data();
+        txaConsole.setText("");
+        while (true) {
+            return_server_data();
+            
+        }
 
     }//GEN-LAST:event_btnTrain1ActionPerformed
 
@@ -406,6 +411,8 @@ public class TrainClient extends javax.swing.JFrame {
         btnStart.setBackground(Color.decode("#30BA30"));
         btnStop.setForeground(Color.decode("#FF1E26"));
         btnStart.setForeground(Color.decode("#ffffff"));
+
+        return_server_data();
         
     }//GEN-LAST:event_btnStartActionPerformed
 
@@ -445,7 +452,24 @@ public class TrainClient extends javax.swing.JFrame {
         btnTrain4.setForeground(Color.decode("#FF5126"));
         
         txaConsole.setText("");
-        txaConsole.append("test");
+
+        for(int i = 0; i < listCoordinates.size(); i++){
+            System.out.println(i);
+            listCoordinatesNUM.add(i);
+            
+
+        }
+
+        System.out.println(listCoordinates.size());
+        System.out.println(listCoordinatesNUM.size());
+
+        for (int listnums : listCoordinatesNUM) {
+            System.out.println(listnums);
+        }
+        
+        
+       
+
     }//GEN-LAST:event_btnTrain3ActionPerformed
 
     private void btnTrain4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrain4ActionPerformed
@@ -481,8 +505,10 @@ public class TrainClient extends javax.swing.JFrame {
 
 
     private void return_server_data(){
-        ServerThread serverThread = new ServerThread();
+        Server_LogicThread serverThread = new Server_LogicThread();
         serverThread.start();
+        listCoordinates = new ArrayList<>();   
+        ArrayList<String> CoordinatesList = new ArrayList<>();   
 
         new Thread(()->{
             try {
@@ -508,6 +534,12 @@ public class TrainClient extends javax.swing.JFrame {
                     socket.receive(pack);
                     message = new String(byteMessage);
                     txaConsole.append("\n" + message);
+                    for(int i = 0; i < 10; i++){
+                        listCoordinates.add(message);
+                    }
+
+                    System.out.println(listCoordinates);
+                
 
                     //checking out if the message comes right
                     System.out.println(message);    
@@ -548,4 +580,7 @@ public class TrainClient extends javax.swing.JFrame {
     // private com.mycompany.sneaksapp.igu.SVGImage svgLogo;
     private javax.swing.JTextArea txaConsole;
     // End of variables declaration//GEN-END:variables
+
+    public ArrayList<String> listCoordinates = new ArrayList<>();   
+    public ArrayList<Integer> listCoordinatesNUM = new ArrayList<>();   
 }
