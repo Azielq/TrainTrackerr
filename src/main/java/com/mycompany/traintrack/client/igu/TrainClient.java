@@ -9,7 +9,6 @@ import com.mycompany.traintrack.client.igu.trains.Train2;
 import com.mycompany.traintrack.client.igu.trains.Train3;
 import com.mycompany.traintrack.client.igu.trains.Train4;
 
-
 public class TrainClient extends javax.swing.JFrame {
 
     private pnlTrainMap trainMap;
@@ -33,6 +32,7 @@ public class TrainClient extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         txaConsole.setEditable(false);
         setResizable(false);
+        checkButtonStates();
     }
 
     public void initContent() {
@@ -129,6 +129,7 @@ public class TrainClient extends javax.swing.JFrame {
         btnTrain1.setForeground(new java.awt.Color(255, 81, 38));
         btnTrain1.setText("Train 1");
         btnTrain1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 81, 38)));
+        btnTrain1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnTrain1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnTrain1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -154,6 +155,7 @@ public class TrainClient extends javax.swing.JFrame {
         btnPause.setForeground(new java.awt.Color(255, 30, 38));
         btnPause.setText("Pause");
         btnPause.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 30, 38)));
+        btnPause.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnPause.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnPause.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -175,6 +177,7 @@ public class TrainClient extends javax.swing.JFrame {
         btnStart.setForeground(new java.awt.Color(48, 186, 48));
         btnStart.setText("Start");
         btnStart.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(48, 186, 48)));
+        btnStart.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnStart.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -187,6 +190,7 @@ public class TrainClient extends javax.swing.JFrame {
         btnTrain2.setForeground(new java.awt.Color(255, 81, 38));
         btnTrain2.setText("Train 2");
         btnTrain2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 81, 38)));
+        btnTrain2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnTrain2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnTrain2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -199,6 +203,7 @@ public class TrainClient extends javax.swing.JFrame {
         btnTrain3.setForeground(new java.awt.Color(255, 81, 38));
         btnTrain3.setText("Train 3");
         btnTrain3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 81, 38)));
+        btnTrain3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnTrain3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnTrain3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -211,6 +216,7 @@ public class TrainClient extends javax.swing.JFrame {
         btnTrain4.setForeground(new java.awt.Color(255, 81, 38));
         btnTrain4.setText("Train 4");
         btnTrain4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 81, 38)));
+        btnTrain4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnTrain4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnTrain4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -230,6 +236,7 @@ public class TrainClient extends javax.swing.JFrame {
         btnReset.setForeground(new java.awt.Color(255, 30, 38));
         btnReset.setText("Reset");
         btnReset.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 30, 38)));
+        btnReset.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnReset.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -379,48 +386,61 @@ public class TrainClient extends javax.swing.JFrame {
     }//GEN-LAST:event_btnTrain1ActionPerformed
 
     private void btnPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPauseActionPerformed
-        ClockManager.stopClock();
-        if (train1Runnable != null) train1Runnable.pause();
-        if (train2Runnable != null) train2Runnable.pause();
-        if (train3Runnable != null) train3Runnable.pause();
-        if (train4Runnable != null) train4Runnable.pause();
+        if (btnStart.getBackground().equals(Color.decode("#30BA30"))) {
 
-        btnPause.setBackground(Color.decode("#FF1E26"));
-        btnStart.setBackground(Color.decode("#FFFFFF"));
-        btnPause.setForeground(Color.decode("#ffffff"));
-        btnStart.setForeground(Color.decode("#30BA30"));
+            ClockManager.stopClock();
+            if (train1Runnable != null) train1Runnable.pause();
+            if (train2Runnable != null) train2Runnable.pause();
+            if (train3Runnable != null) train3Runnable.pause();
+            if (train4Runnable != null) train4Runnable.pause();
+
+            btnPause.setBackground(Color.decode("#FF1E26"));
+            btnStart.setBackground(Color.decode("#FFFFFF"));
+            btnPause.setForeground(Color.decode("#ffffff"));
+            btnStart.setForeground(Color.decode("#30BA30"));
+
+            // Habilitar/Deshabilitar botones según las condiciones
+            
+            btnReset.setEnabled(true);
+            enableTrainButtons(false); 
+
+        }
     }//GEN-LAST:event_btnPauseActionPerformed
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
-    // Initialize and start the shared clock
-    
-    
-        // Asegura de que trainMap esté inicializado antes de iniciar los trenes
-    if (trainMap != null) {
-        ClockManager.initialize(lblReloj);
-        ClockManager.startClock();
-        if (train1Runnable == null || train2Runnable == null || train3Runnable == null || train4Runnable == null) {
-            startTrains();
-            new Thread(train1Runnable).start();
-            new Thread(train2Runnable).start();
-            new Thread(train3Runnable).start();
-            new Thread(train4Runnable).start();
-        } else {
-            System.out.println("intentando Reanudar");
-            train1Runnable.resume();
-            train2Runnable.resume();
-            train3Runnable.resume();
-            train4Runnable.resume();
-        }
-    } else {
-        System.err.println("trainMap es nulo, no se pueden iniciar los trenes.");
-    }
-
-        btnPause.setBackground(Color.decode("#FFFFFF"));
-        btnStart.setBackground(Color.decode("#30BA30"));
-        btnPause.setForeground(Color.decode("#FF1E26"));
-        btnStart.setForeground(Color.decode("#ffffff"));
         
+        if (btnStart.getBackground().equals(Color.decode("#FFFFFF"))) {
+
+                // Asegura de que trainMap esté inicializado antes de iniciar los trenes
+            if (trainMap != null) {
+                ClockManager.initialize(lblReloj);
+                ClockManager.startClock();
+                if (train1Runnable == null || train2Runnable == null || train3Runnable == null || train4Runnable == null) {
+                    startTrains();
+                    new Thread(train1Runnable).start();
+                    new Thread(train2Runnable).start();
+                    new Thread(train3Runnable).start();
+                    new Thread(train4Runnable).start();
+                } else {
+                    System.out.println("intentando Reanudar");
+                    train1Runnable.resume();
+                    train2Runnable.resume();
+                    train3Runnable.resume();
+                    train4Runnable.resume();
+                }
+            } else {
+                System.err.println("trainMap es nulo, no se pueden iniciar los trenes.");
+            }
+
+                btnPause.setBackground(Color.decode("#FFFFFF"));
+                btnStart.setBackground(Color.decode("#30BA30"));
+                btnPause.setForeground(Color.decode("#FF1E26"));
+                btnStart.setForeground(Color.decode("#ffffff"));
+
+                btnPause.setEnabled(true);
+                btnReset.setEnabled(true);
+                enableTrainButtons(true);
+        }
     }//GEN-LAST:event_btnStartActionPerformed
 
     private void btnTrain2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrain2ActionPerformed
@@ -464,23 +484,62 @@ public class TrainClient extends javax.swing.JFrame {
     }//GEN-LAST:event_btnTrain4ActionPerformed
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        if (btnStart.getBackground().equals(Color.decode("#30BA30")) || btnPause.getBackground().equals(Color.decode("#FF1E26"))) {
+            // Ejecutar las operaciones de reset
+            resetTrains();
+            updateButtonStates();
+        }
+    }//GEN-LAST:event_btnResetActionPerformed
+
+    private void checkButtonStates() {
+        if (!btnStart.getBackground().equals(Color.decode("#30BA30"))) {
+            btnPause.setEnabled(false);  // Deshabilita el botón Pause si Start no es verde
+        }
+        if (!btnStart.getBackground().equals(Color.decode("#30BA30")) && !btnPause.getBackground().equals(Color.decode("#FF1E26"))) {
+            btnReset.setEnabled(false);  // Deshabilita el botón Reset si no cumple ninguna condición
+            enableTrainButtons(false);   // Deshabilitar los botones de tren
+        }
+    }
+
+    private void resetTrains() {
+        // Aquí se realiza el reset de los trenes sin bloquear el EDT
         ClockManager.resetClock();
         if (train1Runnable != null) train1Runnable.pause();
         if (train2Runnable != null) train2Runnable.pause();
         if (train3Runnable != null) train3Runnable.pause();
         if (train4Runnable != null) train4Runnable.pause();
-        
+    
         if (train1Runnable != null) train1Runnable.reset();
         if (train2Runnable != null) train2Runnable.reset();
         if (train3Runnable != null) train3Runnable.reset();
         if (train4Runnable != null) train4Runnable.reset();
-
+    
         // Resetear las variables de control
         train1Runnable = null;
         train2Runnable = null;
         train3Runnable = null;
         train4Runnable = null;
-    }//GEN-LAST:event_btnResetActionPerformed
+    }
+    
+    private void updateButtonStates() {
+        // Actualizar los estados de los botones en el EDT
+        btnStart.setBackground(Color.decode("#FFFFFF"));
+        btnStart.setForeground(Color.decode("#30BA30"));
+        btnPause.setBackground(Color.decode("#FFFFFF"));
+        btnPause.setForeground(Color.decode("#FF1E26"));
+    
+        btnPause.setEnabled(false);  // El botón Pause se deshabilita
+        btnReset.setEnabled(false);  // El botón Reset se deshabilita
+        enableTrainButtons(false); 
+    }
+
+    private void enableTrainButtons(boolean enabled) {
+        btnTrain1.setEnabled(enabled);
+        btnTrain2.setEnabled(enabled);
+        btnTrain3.setEnabled(enabled);
+        btnTrain4.setEnabled(enabled);
+    }
+    
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
