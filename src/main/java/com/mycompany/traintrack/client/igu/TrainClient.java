@@ -489,8 +489,6 @@
 
         private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
         
-        // Ejecutar el reset en un hilo separado para no bloquear el EDT
-        new Thread(() -> {
             if (btnStart.getBackground().equals(Color.decode("#30BA30")) || btnPause.getBackground().equals(Color.decode("#FF1E26"))) {
                 // Ejecutar las operaciones de reset
                 resetTrains();
@@ -501,7 +499,6 @@
                 setCursor(Cursor.getDefaultCursor());
                 updateButtonStates();
             });
-        }).start();
         }//GEN-LAST:event_btnResetActionPerformed
 
         private void checkButtonStates() {
