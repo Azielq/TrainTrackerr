@@ -12,6 +12,7 @@ public class TrainRunnable implements Runnable {
     private final Train syncTrain;
     private Calendar calendar;
     private final SimpleDateFormat timeFormat;
+    private boolean firstArrivalAtSyncStation = true;  // Variable para manejar la primera llegada a la estación de sincronización
     
     private final String stopTime; // Formato "HH:mm"
 
@@ -54,15 +55,29 @@ public class TrainRunnable implements Runnable {
                 if (reached) {
                     System.out.println(train.getName() + " ha llegado a " + station.name());
 
-                    // Sincronización en HEREDIA
-                    if (station == Station.Heredia && (train.getName().equals("Train3") || train.getName().equals("Train4"))) {
-                        synchronized (Station.Heredia) {
-                            System.out.println(train.getName() + " ha llegado a HEREDIA, esperando a " + syncTrain.getName());
-                            try {
-                                Station.Heredia.notifyAll(); // Notifica a otros trenes
-                                Station.Heredia.wait();  // Espera a que el otro tren llegue
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+                    // Sincronización en estaciones
+                    if (station == syncStation) {
+                        synchronized (syncStation) {
+                            if (firstArrivalAtSyncStation && train.getName().equals("Train3")) {
+                                // Si es la primera vez que el Tren 3 llega a Heredia, solo notifica a Tren 4 para que comience.
+                                System.out.println("Train3 ha llegado a HEREDIA por primera vez. Notificando a Train4 para que comience.");
+                                syncStation.notifyAll();
+                                firstArrivalAtSyncStation = false;  // Ya no es la primera llegada
+                            } else {
+                                // En las siguientes llegadas, sincronizar ambos trenes
+                                System.out.println(train.getName() + " ha llegado a " + syncStation.name() + ", esperando a " + syncTrain.getName());
+                                
+                                // Esperar a que el otro tren llegue
+                                while (!syncTrain.isAtStation(syncStation)) {
+                                    try {
+                                        syncStation.wait();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                // Ambos trenes han llegado a la estación, pueden continuar
+                                syncStation.notifyAll(); 
                             }
                         }
                     }
@@ -84,18 +99,24 @@ public class TrainRunnable implements Runnable {
                 boolean reached = train.moveToStation(station);
 
                 if (reached) {
-                    System.out.println(train.getName() + " ha regresado a " + station.name());
+                    System.out.println(train.getName() + " ha llegado a " + station.name());
 
-                    // Sincronización en HEREDIA en el camino de regreso también
-                    if (station == Station.Heredia && (train.getName().equals("Train3") || train.getName().equals("Train4"))) {
-                        synchronized (Station.Heredia) {
-                            System.out.println(train.getName() + " ha regresado a HEREDIA, esperando a " + syncTrain.getName());
-                            try {
-                                Station.Heredia.notifyAll(); // Notifica a otros trenes
-                                Station.Heredia.wait();  // Espera a que el otro tren llegue
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+                    // Sincronización en estaciones en el camino de regreso también
+                    if (station == syncStation) {
+                        synchronized (syncStation) {
+                            System.out.println(train.getName() + " ha llegado a " + syncStation.name() + ", esperando a " + syncTrain.getName());
+
+                            // Esperar a que el otro tren llegue
+                            while (!syncTrain.isAtStation(syncStation)) {
+                                try {
+                                    syncStation.wait();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             }
+
+                            // Ambos trenes han llegado a la estación, pueden continuar
+                            syncStation.notifyAll(); 
                         }
                     }
                 }

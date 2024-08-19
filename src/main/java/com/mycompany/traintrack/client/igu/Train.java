@@ -19,7 +19,6 @@ public abstract class Train{
     }
 
     protected boolean moveToStation(Station destination) {
-        System.out.println(name + " intentando moverse a " + destination.name() + " desde (" + position[0] + ", " + position[1] + ")");
     
         while (position[0] != destination.getX() || position[1] != destination.getY()) {
             if (position[0] < destination.getX()) position[0]++;
@@ -27,7 +26,7 @@ public abstract class Train{
             if (position[1] < destination.getY()) position[1]++;
             if (position[1] > destination.getY()) position[1]--;
     
-            System.out.println(name + " moviéndose a (" + position[0] + ", " + position[1] + ") hacia " + destination.name());
+            
     
             trainPanel.updateTrainPosition(trainIndex, position[0], position[1]);
     
@@ -37,7 +36,6 @@ public abstract class Train{
                 e.printStackTrace();
             }
         }
-        System.out.println(name + " ha llegado a " + destination.name());
         return true;
     }
 

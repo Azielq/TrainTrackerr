@@ -50,7 +50,6 @@ public class pnlTrainMap extends javax.swing.JPanel {
     public void updateTrainPosition(int trainIndex, int x, int y) {
         trainPositions[trainIndex][0] = x;
         trainPositions[trainIndex][1] = y;
-        System.out.println("Posición de " + trainIndex + " actualizada a: (" + x + ", " + y + ")");
         SwingUtilities.invokeLater(this::repaint); // Asegura que el repintado ocurra en el hilo de la GUI
     }
 
