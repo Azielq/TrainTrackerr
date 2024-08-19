@@ -1,28 +1,21 @@
     package com.mycompany.traintrack.client.igu;
 
     import java.awt.Color;
-    import java.util.Arrays;
+import java.io.IOException;
 
-    import javax.swing.SwingUtilities;
+import javax.swing.SwingUtilities;
 
-    import com.formdev.flatlaf.extras.FlatSVGIcon;
-    import com.mycompany.traintrack.client.igu.trains.Train1;
-    import com.mycompany.traintrack.client.igu.trains.Train2;
-    import com.mycompany.traintrack.client.igu.trains.Train3;
-    import com.mycompany.traintrack.client.igu.trains.Train4;
-    import com.mycompany.traintrack.client.app.Connection;
-    import java.io.IOException;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.mycompany.traintrack.client.app.Connection;
+import com.mycompany.traintrack.server.logica.ClockManager;
 
 
     public class TrainClient extends javax.swing.JFrame {
 
         private pnlTrainMap trainMap;
-        private TrainRunnable train1Runnable;
-        private TrainRunnable train2Runnable;
-        private TrainRunnable train3Runnable;
-        private TrainRunnable train4Runnable;
-
+        private int monitoredTrainIndex = -1; // Initially, no train is monitored
         private Connection connection;
+        private boolean trainsRunning = false;
 
         public TrainClient() {
             initComponents();
@@ -32,11 +25,11 @@
             svgLogo.setSvgImage("logo.svg", 250, 125);
 
             try {
-            // Initialize the connection to the server
-            connection = new Connection("127.0.0.1", 9999); // Replace with actual server IP and port
-        } catch (IOException e) {
-            System.err.println("Failed to connect to server: " + e.getMessage());
-        }
+                connection = new Connection("127.0.0.1", 9999); // Conectarse al servidor
+                listenToServer(); // Iniciar la escucha del servidor
+            } catch (IOException e) {
+                System.err.println("Failed to connect to server: " + e.getMessage());
+            }
         }
 
         public void initStyles() {
@@ -51,8 +44,12 @@
 
         public void initContent() {
             try {
+                
                 trainMap = new pnlTrainMap();
                 System.out.println("trainMap ha sido inicializado: " + (trainMap != null)); // Esto debe imprimir 'true'
+
+                // Pasa la instancia de trainMap al servidor
+            
             } catch (Exception e) {
                 System.err.println("Ocurrió un error al inicializar trainMap: " + e.getMessage());
                 e.printStackTrace();
@@ -68,21 +65,50 @@
             }
         }
 
-        private void startTrains() {
-            
-            try {
-            // Example: Request train data from the server
-            connection.sendRequest("START_TRAINS");
-            String response = connection.receiveResponse();
-            System.out.println("Server response: " + response);
-
-            // Parse the response and start the trains
-            // Example logic depending on the response structure
-            // This is where you'd start the train threads or update the UI based on the server response
-
-        } catch (IOException e) {
-            System.err.println("Communication error: " + e.getMessage());
+        private void listenToServer() {
+            new Thread(() -> {
+                while (true) {
+                    try {
+                        String serverMessage = connection.receiveResponse();
+                        handleServerMessage(serverMessage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        break;
+                    }
+                }
+            }).start();
         }
+        
+        
+
+    private void handleServerMessage(String message) {
+        System.out.println("Received message from server: " + message);
+        String[] parts = message.split(" ");
+        String command = parts[0];
+        
+        if (command.equals("POSITION_UPDATE")) {
+            int trainIndex = Integer.parseInt(parts[1]);
+            int x = Integer.parseInt(parts[2]);
+            int y = Integer.parseInt(parts[3]);
+
+            SwingUtilities.invokeLater(() -> {
+                if (trainMap != null) {
+                    trainMap.updateTrainPosition(trainIndex, x, y); // Actualizar la posición en el panel
+                }
+            });
+        } else if (command.equals("STATION_UPDATE")) {
+            int trainIndex = Integer.parseInt(parts[1]);
+            String stationName = parts[2];
+
+            // Only display the station update if the train being monitored is the one selected by the user
+            if (trainIndex == monitoredTrainIndex) {
+                SwingUtilities.invokeLater(() -> txaConsole.append("Train " + (trainIndex + 1) + " is at " + stationName + "\n"));
+            }
+        }
+    }
+
+       // private void startTrains() {
+        
             
 //            Train train1 = new Train1(trainMap, Station.Belén, "Train1", 0);
 //            Train train2 = new Train2(trainMap, Station.Paraíso, "Train2", 1);
@@ -122,7 +148,13 @@
 //                Station.Alajuela), Station.Heredia, train3);
 //        
 
-        }
+        //}
+
+
+
+        
+
+    
 
         
         // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -398,11 +430,8 @@
         }// </editor-fold>//GEN-END:initComponents
 
         private void btnTrain1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrain1ActionPerformed
-    //        Train1Running = true;
-    //        Train2Running = false;
-    //        Train3Running = false;
-    //        Train4Running = false;
-
+            monitoredTrainIndex = 0;
+            txaConsole.setText(""); // Limpiar la consola
             btnTrain1.setBackground(Color.decode("#FF5126"));
             btnTrain2.setBackground(Color.decode("#ffffff"));
             btnTrain3.setBackground(Color.decode("#ffffff"));
@@ -415,65 +444,20 @@
         }//GEN-LAST:event_btnTrain1ActionPerformed
 
         private void btnPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPauseActionPerformed
-            if (btnStart.getBackground().equals(Color.decode("#30BA30"))) {
-
-                ClockManager.stopClock();
-                if (train1Runnable != null) train1Runnable.pause();
-                if (train2Runnable != null) train2Runnable.pause();
-                if (train3Runnable != null) train3Runnable.pause();
-                if (train4Runnable != null) train4Runnable.pause();
-
-                btnPause.setBackground(Color.decode("#FF1E26"));
-                btnStart.setBackground(Color.decode("#FFFFFF"));
-                btnPause.setForeground(Color.decode("#ffffff"));
-                btnStart.setForeground(Color.decode("#30BA30"));
-
-                // Habilitar/Deshabilitar botones según las condiciones
-                
-                btnReset.setEnabled(true);
-                enableTrainButtons(false); 
-
-            }
+            pauseTrains();
         }//GEN-LAST:event_btnPauseActionPerformed
 
         private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
-            
-            if (btnStart.getBackground().equals(Color.decode("#FFFFFF"))) {
-
-                    // Asegura de que trainMap esté inicializado antes de iniciar los trenes
-                if (trainMap != null) {
-                    ClockManager.initialize(lblReloj);
-                    ClockManager.startClock();
-                    if (train1Runnable == null || train2Runnable == null || train3Runnable == null || train4Runnable == null) {
-                        startTrains();
-                        new Thread(train1Runnable).start();
-                        new Thread(train2Runnable).start();
-                        new Thread(train3Runnable).start();
-                        new Thread(train4Runnable).start();
-                    } else {
-                        System.out.println("intentando Reanudar");
-                        train1Runnable.resume();
-                        train2Runnable.resume();
-                        train3Runnable.resume();
-                        train4Runnable.resume();
-                    }
-                } else {
-                    System.err.println("trainMap es nulo, no se pueden iniciar los trenes.");
-                }
-
-                    btnPause.setBackground(Color.decode("#FFFFFF"));
-                    btnStart.setBackground(Color.decode("#30BA30"));
-                    btnPause.setForeground(Color.decode("#FF1E26"));
-                    btnStart.setForeground(Color.decode("#ffffff"));
-
-                    btnPause.setEnabled(true);
-                    btnReset.setEnabled(true);
-                    enableTrainButtons(true);
+            if (!trainsRunning) { // Si los trenes no están corriendo, empieza
+                startTrains();
+            } else { // Si los trenes están pausados, reanuda
+                resumeTrains();
             }
         }//GEN-LAST:event_btnStartActionPerformed
 
         private void btnTrain2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrain2ActionPerformed
-
+            txaConsole.setText(""); // Limpiar la consola
+            monitoredTrainIndex = 1;
             btnTrain1.setBackground(Color.decode("#ffffff"));
             btnTrain2.setBackground(Color.decode("#FF5126"));
             btnTrain3.setBackground(Color.decode("#ffffff"));
@@ -486,7 +470,8 @@
         }//GEN-LAST:event_btnTrain2ActionPerformed
 
         private void btnTrain3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrain3ActionPerformed
-
+            txaConsole.setText(""); // Limpiar la consola
+            monitoredTrainIndex = 2;
             btnTrain1.setBackground(Color.decode("#ffffff"));
             btnTrain2.setBackground(Color.decode("#ffffff"));
             btnTrain3.setBackground(Color.decode("#FF5126"));
@@ -499,8 +484,8 @@
         }//GEN-LAST:event_btnTrain3ActionPerformed
 
         private void btnTrain4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrain4ActionPerformed
-            
-
+            txaConsole.setText(""); // Limpiar la consola
+            monitoredTrainIndex = 3;
             btnTrain1.setBackground(Color.decode("#ffffff"));
             btnTrain2.setBackground(Color.decode("#ffffff"));
             btnTrain3.setBackground(Color.decode("#ffffff"));
@@ -514,27 +499,8 @@
 
         private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
             
-            
-            try {
-            connection.sendRequest("RESET_TRAINS");
-            String response = connection.receiveResponse();
-            System.out.println("Server response: " + response);
-
-            // Reset logic based on server response
-
-            } catch (IOException e) {
-                System.err.println("Communication error: " + e.getMessage());
-            }
-//            if (btnStart. getBackground().equals(Color.decode("#30BA30")) || btnPause.getBackground().equals(Color.decode("#FF1E26"))) {
-//                // Ejecutar las operaciones de reset
-//                resetTrains();
-//            }
-//
-//            // Cambiar el cursor de vuelta al normal y actualizar los botones en el EDT
-//            SwingUtilities.invokeLater(() -> {
-//                setCursor(Cursor.getDefaultCursor());
-//                updateButtonStates();
-//            });
+            resetTrains();
+            txaConsole.setText(""); // Limpiar la consola
         }//GEN-LAST:event_btnResetActionPerformed
 
         private void checkButtonStates() {
@@ -545,26 +511,6 @@
                 btnReset.setEnabled(false);  // Deshabilita el botón Reset si no cumple ninguna condición
                 enableTrainButtons(false);   // Deshabilitar los botones de tren
             }
-        }
-
-        private void resetTrains() {
-            // Aquí se realiza el reset de los trenes sin bloquear el EDT
-            ClockManager.resetClock();
-            if (train1Runnable != null) train1Runnable.pause();
-            if (train2Runnable != null) train2Runnable.pause();
-            if (train3Runnable != null) train3Runnable.pause();
-            if (train4Runnable != null) train4Runnable.pause();
-        
-            if (train1Runnable != null) train1Runnable.reset();
-            if (train2Runnable != null) train2Runnable.reset();
-            if (train3Runnable != null) train3Runnable.reset();
-            if (train4Runnable != null) train4Runnable.reset();
-        
-            // Resetear las variables de control
-            train1Runnable = null;
-            train2Runnable = null;
-            train3Runnable = null;
-            train4Runnable = null;
         }
         
         private void updateButtonStates() {
@@ -594,6 +540,80 @@
             }
             super.dispose();
         }       
+
+        private void startTrains() {
+            try {
+                connection.sendRequest("START_TRAINS");
+                ClockManager.initialize(lblReloj);
+                ClockManager.startClock();
+                
+                SwingUtilities.invokeLater(() -> {
+                    btnStart.setBackground(Color.decode("#30BA30"));
+                    btnPause.setBackground(Color.decode("#FFFFFF"));
+                    btnStart.setForeground(Color.decode("#FFFFFF"));
+                    btnPause.setForeground(Color.decode("#FF1E26"));
+                    btnPause.setEnabled(true);
+                    btnReset.setEnabled(true);
+                    enableTrainButtons(true);
+                });
+                trainsRunning = true; 
+            } catch (IOException e) {
+                System.err.println("Error de comunicación: " + e.getMessage());
+            }
+        }
+        
+        private void resumeTrains() {
+            try {
+                connection.sendRequest("RESUME_TRAINS");
+                SwingUtilities.invokeLater(() -> {
+                    btnStart.setBackground(Color.decode("#30BA30"));
+                    btnPause.setBackground(Color.decode("#FFFFFF"));
+                    btnStart.setForeground(Color.decode("#FFFFFF"));
+                    btnPause.setForeground(Color.decode("#FF1E26"));
+                    btnPause.setEnabled(true);
+                    btnReset.setEnabled(true);
+                    enableTrainButtons(true);
+                });
+                trainsRunning = true;
+            } catch (IOException e) {
+                System.err.println("Error de comunicación: " + e.getMessage());
+            }
+        }
+        
+        private void pauseTrains() {
+            try {
+                connection.sendRequest("PAUSE_TRAINS");
+                SwingUtilities.invokeLater(() -> {
+                    btnStart.setBackground(Color.decode("#FFFFFF"));
+                    btnPause.setBackground(Color.decode("#FF1E26"));
+                    btnStart.setForeground(Color.decode("#30BA30"));
+                    btnPause.setForeground(Color.decode("#FFFFFF"));
+                    btnReset.setEnabled(true);
+                    enableTrainButtons(false);
+                });
+                trainsRunning = false; 
+            } catch (IOException e) {
+                System.err.println("Error de comunicación: " + e.getMessage());
+            }
+        }
+        
+        private void resetTrains() {
+            try {
+                connection.sendRequest("RESET_TRAINS");
+                SwingUtilities.invokeLater(() -> {
+                    
+                    updateButtonStates(); // Actualizar los estados de los botones
+                    txaConsole.setText(""); // Limpiar la consola
+                });
+                trainsRunning = false; 
+            } catch (IOException e) {
+                System.err.println("Error de comunicación: " + e.getMessage());
+            }
+        }
+
+        
+    
+
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton btnPause;

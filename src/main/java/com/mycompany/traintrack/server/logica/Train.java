@@ -1,4 +1,8 @@
-package com.mycompany.traintrack.client.igu;
+
+package com.mycompany.traintrack.server.logica;
+
+import com.mycompany.traintrack.client.igu.pnlTrainMap;
+
 
 public abstract class Train{
     
@@ -7,51 +11,56 @@ public abstract class Train{
     protected pnlTrainMap trainPanel;
     private final String name;
     private final int trainIndex;
-    private volatile boolean stopMovement; // Añadido para controlar el movimiento
+    private volatile boolean stopMovement;
 
     public static final int stationTime = 10000;
 
-    public Train(pnlTrainMap panel, Station startStation, String name, int trainIndex) {
-        this.trainPanel = panel;
+    public Train(Station startStation, String name, int trainIndex) {
         this.position = new int[]{startStation.getX(), startStation.getY()};
         this.active = false;
         this.name = name;
         this.trainIndex = trainIndex;
-        this.stopMovement = false; // Inicialmente, el movimiento no se detiene
-    }
-
-    protected boolean moveToStation(Station destination) {
-        while (position[0] != destination.getX() || position[1] != destination.getY()) {
-            if (stopMovement) {
-                System.out.println(name + " ha detenido su movimiento.");
-                return false; // Salir del bucle si se solicita detener el movimiento
-            }
-
-            if (position[0] < destination.getX()) position[0]++;
-            if (position[0] > destination.getX()) position[0]--;
-            if (position[1] < destination.getY()) position[1]++;
-            if (position[1] > destination.getY()) position[1]--;
-
-            trainPanel.updateTrainPosition(trainIndex, position[0], position[1]);
-
-            try {
-                Thread.sleep(10); // Simulación del movimiento
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return false; // Salir del bucle si el hilo es interrumpido
-            }
-        }
-        return true;
+        this.stopMovement = false;
     }
 
     public boolean isAtStation(Station station) {
         return position[0] == station.getX() && position[1] == station.getY();
     }
 
+    protected boolean moveToStation(Station destination) {
+        int startX = position[0];
+        int startY = position[1];
+        int endX = destination.getX();
+        int endY = destination.getY();
+        int steps = 100; // Increase the number of steps to smooth out the movement
+        for (int i = 0; i <= steps; i++) {
+            if (stopMovement) {
+                System.out.println(name + " ha detenido su movimiento.");
+                return false;
+            }
+            
+            double t = (double) i / steps;
+            int currentX = (int) ((1 - t) * startX + t * endX);
+            int currentY = (int) ((1 - t) * startY + t * endY);
+            
+            setPosition(currentX, currentY);
+    
+            try {
+                Thread.sleep(5); // Shorter sleep time for smoother movement
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void setPosition(int x, int y) {
         this.position[0] = x;
         this.position[1] = y;
-        trainPanel.updateTrainPosition(trainIndex, x, y); // Actualizar la posición en el panel
+        if (trainPanel != null) {
+            trainPanel.updateTrainPosition(trainIndex, x, y);
+        }
     }
 
     public void resetPosition(Station station) {
@@ -60,12 +69,12 @@ public abstract class Train{
     }
 
     public void stopMovement() {
-        stopMovement = true; // Indica que el movimiento debe detenerse
+        stopMovement = true; 
         System.out.println(getName() + " ha solicitado detener su movimiento.");
     }
 
     public void resumeMovement() {
-        stopMovement = false; // Permite que el tren vuelva a moverse
+        stopMovement = false; 
     }
 
     public String getName() {
@@ -74,5 +83,13 @@ public abstract class Train{
 
     public int getTrainIndex() {
         return trainIndex;
+    }
+
+    public int getPositionX() {
+        return position[0];
+    }
+
+    public int getPositionY() {
+        return position[1];
     }
 }

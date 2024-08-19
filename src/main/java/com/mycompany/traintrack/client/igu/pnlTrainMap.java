@@ -15,7 +15,7 @@ public class pnlTrainMap extends javax.swing.JPanel {
     private FlatSVGIcon[] trainIcons;
     private int[][] trainPositions;
 
-
+    
     
     
     public pnlTrainMap() {
@@ -47,6 +47,7 @@ public class pnlTrainMap extends javax.swing.JPanel {
         }
     }
 
+
     public void updateTrainPosition(int trainIndex, int x, int y) {
         trainPositions[trainIndex][0] = x;
         trainPositions[trainIndex][1] = y;
@@ -65,6 +66,7 @@ public class pnlTrainMap extends javax.swing.JPanel {
             trainIcons[i].paintIcon(this, g, trainPositions[i][0], trainPositions[i][1]);
         }
     }
+
     
         
 

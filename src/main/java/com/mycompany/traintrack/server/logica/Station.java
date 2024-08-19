@@ -1,4 +1,4 @@
-package com.mycompany.traintrack.client.igu;
+package com.mycompany.traintrack.server.logica;
 
 public enum Station {
     
