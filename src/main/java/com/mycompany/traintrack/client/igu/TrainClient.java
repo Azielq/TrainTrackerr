@@ -525,7 +525,7 @@
             } catch (IOException e) {
                 System.err.println("Communication error: " + e.getMessage());
             }
-//            if (btnStart.getBackground().equals(Color.decode("#30BA30")) || btnPause.getBackground().equals(Color.decode("#FF1E26"))) {
+//            if (btnStart. getBackground().equals(Color.decode("#30BA30")) || btnPause.getBackground().equals(Color.decode("#FF1E26"))) {
 //                // Ejecutar las operaciones de reset
 //                resetTrains();
 //            }
