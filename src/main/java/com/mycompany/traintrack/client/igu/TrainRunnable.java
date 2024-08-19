@@ -3,6 +3,7 @@ package com.mycompany.traintrack.client.igu;
 
 import java.util.List;
 
+import javax.swing.SwingUtilities;
 public class TrainRunnable implements Runnable {
     private final Train train;
     private final List<Station> route;
@@ -43,9 +44,8 @@ public class TrainRunnable implements Runnable {
             }
         }
 
-        while (true) {
+        while (running) {
             synchronized (this) {
-                // Forzamos una interrupción rápida si se solicita un reset
                 if (resetRequested || shouldStop()) {
                     break;
                 }
@@ -61,7 +61,6 @@ public class TrainRunnable implements Runnable {
 
             for (Station station : route) {
                 synchronized (this) {
-                    // Forzar una interrupción si se solicita un reset durante el recorrido
                     if (resetRequested || shouldStop()) {
                         break;
                     }
@@ -170,17 +169,33 @@ public class TrainRunnable implements Runnable {
         paused = true;
         running = false;
         resetRequested = true;
-        notifyAll();  // Despertar el hilo si está esperando
-        resetTrainPosition();
+    
+        // Notificar a cualquier hilo que esté esperando para que se detenga
+        notifyAll();  
+    
+        // Realizar el reset en el EDT para evitar bloquear la UI
+        SwingUtilities.invokeLater(() -> {
+            stopAllMovementsAndReset();
+            resetRequested = false;
+            stop();
+        });
+    }
+
+    private void stopAllMovementsAndReset() {
+        synchronized (resetLock) {
+            stopAllMovements(); // Detener todos los movimientos
+            resetTrainPosition(); // Resetear la posición del tren
+        }
+    }
+
+    private void stopAllMovements() {
+        // Detener todos los movimientos del tren
+        train.stopMovement(); // Implementar este método en la clase Train
     }
 
     private void resetTrainPosition() {
-        synchronized (resetLock) {
-            train.moveToStation(initialStation);
-            resetRequested = false;
-            paused = true;  // Mantener el tren en pausa después del reset
-            System.out.println(train.getName() + " se ha reseteado a " + initialStation.name());
-        }
+        train.setPosition(initialStation.getX(), initialStation.getY()); // Reposicionar el tren
+        System.out.println(train.getName() + " se ha reseteado a " + initialStation.name());
     }
 
     private int getWaitTimeForStation(Station station) {
