@@ -1,8 +1,6 @@
 
 package com.mycompany.traintrack.client.igu;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 public class TrainRunnable implements Runnable {
@@ -10,25 +8,17 @@ public class TrainRunnable implements Runnable {
     private final List<Station> route;
     private final Station syncStation;
     private final Train syncTrain;
-    private Calendar calendar;
-    private final SimpleDateFormat timeFormat;
-    private boolean firstArrivalAtSyncStation = true;  // Variable para manejar la primera llegada a la estación de sincronización
     
-    private final String stopTime; // Formato "HH:mm"
+    private boolean firstArrivalAtSyncStation = true;  // Variable para manejar la primera llegada a la estación de sincronización
 
     public TrainRunnable(Train train, List<Station> route, Station syncStation, Train syncTrain, String stopTime) {
         this.train = train;
         this.route = route;
         this.syncStation = syncStation;
         this.syncTrain = syncTrain;
-        this.stopTime = stopTime;
-        this.calendar = Calendar.getInstance();
-        this.calendar.set(Calendar.HOUR_OF_DAY, 5);
-        this.calendar.set(Calendar.MINUTE, 0);
-        this.calendar.set(Calendar.SECOND, 0);
-        this.timeFormat = new SimpleDateFormat("HH:mm");
     }
 
+    
     @Override
     public void run() {
         System.out.println(train.getName() + " ha iniciado.");
@@ -46,6 +36,9 @@ public class TrainRunnable implements Runnable {
         }
 
         while (!shouldStop()) {
+            String currentTime = ClockManager.getCurrentTime();
+            System.out.println(train.getName() + " tiempo actual: " + currentTime);
+            
             // Mover hacia adelante en la ruta
             for (Station station : route) {
                 if (shouldStop()) break;
@@ -133,7 +126,7 @@ public class TrainRunnable implements Runnable {
     }
 
     private boolean shouldStop() {
-        String currentTime = timeFormat.format(calendar.getTime());
+        String currentTime = ClockManager.getCurrentTime();
         // Detiene trenes 3 y 4 a las 6:00 PM
         if (train.getName().equals("Train3") || train.getName().equals("Train4")) {
             return currentTime.compareTo("18:00") >= 0;

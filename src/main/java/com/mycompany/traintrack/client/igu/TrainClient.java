@@ -1,12 +1,7 @@
 package com.mycompany.traintrack.client.igu;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
-import javax.swing.Timer;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.mycompany.traintrack.client.igu.trains.Train1;
@@ -15,12 +10,9 @@ import com.mycompany.traintrack.client.igu.trains.Train3;
 import com.mycompany.traintrack.client.igu.trains.Train4;
 
 
-
 public class TrainClient extends javax.swing.JFrame {
 
     private pnlTrainMap trainMap;
-    private Timer relojTimer;
-    private Calendar calendario;
 
     public TrainClient() {
         initComponents();
@@ -100,31 +92,6 @@ public class TrainClient extends javax.swing.JFrame {
         new Thread(train2Runnable).start();
         new Thread(train3Runnable).start();
         new Thread(train4Runnable).start();
-    }
-
-    private void startClock() {
-        relojTimer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                calendario.add(Calendar.MINUTE, 1); // 1 segundo = 1 minuto
-                SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
-                lblReloj.setText(formatoHora.format(calendario.getTime()));
-            }
-        });
-    }
-
-    private void resetClock() {
-        calendario = Calendar.getInstance();
-        calendario.set(Calendar.HOUR_OF_DAY, 5);
-        calendario.set(Calendar.MINUTE, 0);
-        calendario.set(Calendar.SECOND, 0);
-        calendario.set(Calendar.MILLISECOND, 0);
-        
-        if (relojTimer != null) {
-            relojTimer.stop();
-        }
-        startClock();
-        relojTimer.start();
     }
 
     
@@ -411,10 +378,7 @@ public class TrainClient extends javax.swing.JFrame {
     }//GEN-LAST:event_btnTrain1ActionPerformed
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
-        // Detener el reloj cuando se presiona el botón "Stop"
-        if (relojTimer != null) {
-            relojTimer.stop();
-        }
+        ClockManager.stopClock();
         
         btnStop.setBackground(Color.decode("#FF1E26"));
         btnStart.setBackground(Color.decode("#FFFFFF"));
@@ -423,8 +387,10 @@ public class TrainClient extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
-        resetClock();
-
+    // Initialize and start the shared clock
+    ClockManager.initialize(lblReloj);
+    ClockManager.startClock();
+    
         // Asegura de que trainMap esté inicializado antes de iniciar los trenes
     if (trainMap != null) {
         startTrains();
@@ -440,10 +406,6 @@ public class TrainClient extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStartActionPerformed
 
     private void btnTrain2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrain2ActionPerformed
-//        Train1Running = false;
-//        Train2Running = true;
-//        Train3Running = false;
-//        Train4Running = false;
 
         btnTrain1.setBackground(Color.decode("#ffffff"));
         btnTrain2.setBackground(Color.decode("#FF5126"));
@@ -457,10 +419,6 @@ public class TrainClient extends javax.swing.JFrame {
     }//GEN-LAST:event_btnTrain2ActionPerformed
 
     private void btnTrain3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrain3ActionPerformed
-//        Train1Running = false;
-//        Train2Running = false;
-//        Train3Running = true;
-//        Train4Running = false;
 
         btnTrain1.setBackground(Color.decode("#ffffff"));
         btnTrain2.setBackground(Color.decode("#ffffff"));
@@ -474,10 +432,7 @@ public class TrainClient extends javax.swing.JFrame {
     }//GEN-LAST:event_btnTrain3ActionPerformed
 
     private void btnTrain4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrain4ActionPerformed
-//        Train1Running = false;
-//        Train2Running = false;
-//        Train3Running = false;
-//        Train4Running = true;
+        
 
         btnTrain1.setBackground(Color.decode("#ffffff"));
         btnTrain2.setBackground(Color.decode("#ffffff"));
@@ -491,7 +446,7 @@ public class TrainClient extends javax.swing.JFrame {
     }//GEN-LAST:event_btnTrain4ActionPerformed
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
-        
+        ClockManager.resetClock();
     }//GEN-LAST:event_btnResetActionPerformed
 
 
