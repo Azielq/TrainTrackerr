@@ -91,10 +91,10 @@ public class TrainClient extends javax.swing.JFrame {
             Station.Alajuela), Station.Heredia, train4, "18:00");
     
         TrainRunnable train4Runnable = new TrainRunnable(train4, Arrays.asList(
-            Station.Alajuela, Station.Bulevar_Aeropuerto, Station.Río_Segundo,
-            Station.San_Joaquín, Station.San_Francisco, Station.Heredia, Station.Miraflores,
-            Station.Santa_Rosa, Station.Colima, Station.Calle_Blancos, Station.Estación_Atlántico),
-            Station.Heredia, train3, "18:00");
+            Station.Estación_Atlántico, Station.Calle_Blancos, Station.Colima,
+            Station.Santa_Rosa, Station.Miraflores, Station.Heredia, Station.San_Francisco,
+            Station.San_Joaquín, Station.Río_Segundo, Station.Bulevar_Aeropuerto,
+            Station.Alajuela), Station.Heredia, train3, "18:00");
     
         new Thread(train1Runnable).start();
         new Thread(train2Runnable).start();
