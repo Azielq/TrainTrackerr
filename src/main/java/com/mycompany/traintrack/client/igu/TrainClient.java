@@ -10,7 +10,8 @@
     import com.mycompany.traintrack.client.igu.trains.Train2;
     import com.mycompany.traintrack.client.igu.trains.Train3;
     import com.mycompany.traintrack.client.igu.trains.Train4;
-    import java.awt.Cursor;
+    import com.mycompany.traintrack.client.app.Connection;
+    import java.io.IOException;
 
 
     public class TrainClient extends javax.swing.JFrame {
@@ -21,12 +22,21 @@
         private TrainRunnable train3Runnable;
         private TrainRunnable train4Runnable;
 
+        private Connection connection;
+
         public TrainClient() {
             initComponents();
             initStyles();
             initContent();
             this.setTitle("TrainTrack - Cliente");
             svgLogo.setSvgImage("logo.svg", 250, 125);
+
+            try {
+            // Initialize the connection to the server
+            connection = new Connection("127.0.0.1", 9999); // Replace with actual server IP and port
+        } catch (IOException e) {
+            System.err.println("Failed to connect to server: " + e.getMessage());
+        }
         }
 
         public void initStyles() {
@@ -59,43 +69,58 @@
         }
 
         private void startTrains() {
-            Train train1 = new Train1(trainMap, Station.Belén, "Train1", 0);
-            Train train2 = new Train2(trainMap, Station.Paraíso, "Train2", 1);
-            Train train3 = new Train3(trainMap, Station.Estación_Atlántico, "Train3", 2);
-            Train train4 = new Train4(trainMap, Station.Estación_Atlántico, "Train4", 3);
-        
-            train1Runnable = new TrainRunnable(train1, Arrays.asList(
-                Station.Belén, Station.Pedregal, Station.Metrópolis, Station.Demasa,
-                Station.Pecosa, Station.Pavas_Centro, Station.Jacks, Station.AyA,
-                Station.La_Salle, Station.Contraloría, Station.Barrio_Cuba,
-                Station.Estación_Pacífico, Station.Plaza_Víquez, Station.La_Corte,
-                Station.Estación_Atlántico, Station.UCR, Station.U_Latina,
-                Station.Freses, Station.UACA, Station.Tres_Ríos,
-                Station.Cartago, Station.Los_Ángeles, Station.Oreamuno, Station.Paraíso),
-                Station.Estación_Atlántico, train2);
-        
-            train2Runnable = new TrainRunnable(train2, Arrays.asList(
-                Station.Paraíso, Station.Oreamuno, Station.Los_Ángeles,
-                Station.Cartago, Station.Tres_Ríos, Station.UACA, Station.Freses,
-                Station.U_Latina, Station.UCR, Station.Estación_Atlántico,
-                Station.La_Corte, Station.Plaza_Víquez, Station.Estación_Pacífico,
-                Station.Barrio_Cuba, Station.Contraloría, Station.La_Salle, Station.AyA,
-                Station.Jacks, Station.Pavas_Centro, Station.Pecosa,
-                Station.Demasa, Station.Metrópolis, Station.Pedregal, Station.Belén),
-                Station.Estación_Atlántico, train1);
-        
-            train3Runnable = new TrainRunnable(train3, Arrays.asList(
-                Station.Estación_Atlántico, Station.Calle_Blancos, Station.Colima,
-                Station.Santa_Rosa, Station.Miraflores, Station.Heredia, Station.San_Francisco,
-                Station.San_Joaquín, Station.Río_Segundo, Station.Bulevar_Aeropuerto,
-                Station.Alajuela), Station.Heredia, train4);
-        
-            train4Runnable = new TrainRunnable(train4, Arrays.asList(
-                Station.Estación_Atlántico, Station.Calle_Blancos, Station.Colima,
-                Station.Santa_Rosa, Station.Miraflores, Station.Heredia, Station.San_Francisco,
-                Station.San_Joaquín, Station.Río_Segundo, Station.Bulevar_Aeropuerto,
-                Station.Alajuela), Station.Heredia, train3);
-        
+            
+            try {
+            // Example: Request train data from the server
+            connection.sendRequest("START_TRAINS");
+            String response = connection.receiveResponse();
+            System.out.println("Server response: " + response);
+
+            // Parse the response and start the trains
+            // Example logic depending on the response structure
+            // This is where you'd start the train threads or update the UI based on the server response
+
+        } catch (IOException e) {
+            System.err.println("Communication error: " + e.getMessage());
+        }
+            
+//            Train train1 = new Train1(trainMap, Station.Belén, "Train1", 0);
+//            Train train2 = new Train2(trainMap, Station.Paraíso, "Train2", 1);
+//            Train train3 = new Train3(trainMap, Station.Estación_Atlántico, "Train3", 2);
+//            Train train4 = new Train4(trainMap, Station.Estación_Atlántico, "Train4", 3);
+//        
+//            train1Runnable = new TrainRunnable(train1, Arrays.asList(
+//                Station.Belén, Station.Pedregal, Station.Metrópolis, Station.Demasa,
+//                Station.Pecosa, Station.Pavas_Centro, Station.Jacks, Station.AyA,
+//                Station.La_Salle, Station.Contraloría, Station.Barrio_Cuba,
+//                Station.Estación_Pacífico, Station.Plaza_Víquez, Station.La_Corte,
+//                Station.Estación_Atlántico, Station.UCR, Station.U_Latina,
+//                Station.Freses, Station.UACA, Station.Tres_Ríos,
+//                Station.Cartago, Station.Los_Ángeles, Station.Oreamuno, Station.Paraíso),
+//                Station.Estación_Atlántico, train2);
+//        
+//            train2Runnable = new TrainRunnable(train2, Arrays.asList(
+//                Station.Paraíso, Station.Oreamuno, Station.Los_Ángeles,
+//                Station.Cartago, Station.Tres_Ríos, Station.UACA, Station.Freses,
+//                Station.U_Latina, Station.UCR, Station.Estación_Atlántico,
+//                Station.La_Corte, Station.Plaza_Víquez, Station.Estación_Pacífico,
+//                Station.Barrio_Cuba, Station.Contraloría, Station.La_Salle, Station.AyA,
+//                Station.Jacks, Station.Pavas_Centro, Station.Pecosa,
+//                Station.Demasa, Station.Metrópolis, Station.Pedregal, Station.Belén),
+//                Station.Estación_Atlántico, train1);
+//        
+//            train3Runnable = new TrainRunnable(train3, Arrays.asList(
+//                Station.Estación_Atlántico, Station.Calle_Blancos, Station.Colima,
+//                Station.Santa_Rosa, Station.Miraflores, Station.Heredia, Station.San_Francisco,
+//                Station.San_Joaquín, Station.Río_Segundo, Station.Bulevar_Aeropuerto,
+//                Station.Alajuela), Station.Heredia, train4);
+//        
+//            train4Runnable = new TrainRunnable(train4, Arrays.asList(
+//                Station.Estación_Atlántico, Station.Calle_Blancos, Station.Colima,
+//                Station.Santa_Rosa, Station.Miraflores, Station.Heredia, Station.San_Francisco,
+//                Station.San_Joaquín, Station.Río_Segundo, Station.Bulevar_Aeropuerto,
+//                Station.Alajuela), Station.Heredia, train3);
+//        
 
         }
 
@@ -488,17 +513,28 @@
         }//GEN-LAST:event_btnTrain4ActionPerformed
 
         private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
-        
-            if (btnStart.getBackground().equals(Color.decode("#30BA30")) || btnPause.getBackground().equals(Color.decode("#FF1E26"))) {
-                // Ejecutar las operaciones de reset
-                resetTrains();
-            }
+            
+            
+            try {
+            connection.sendRequest("RESET_TRAINS");
+            String response = connection.receiveResponse();
+            System.out.println("Server response: " + response);
 
-            // Cambiar el cursor de vuelta al normal y actualizar los botones en el EDT
-            SwingUtilities.invokeLater(() -> {
-                setCursor(Cursor.getDefaultCursor());
-                updateButtonStates();
-            });
+            // Reset logic based on server response
+
+            } catch (IOException e) {
+                System.err.println("Communication error: " + e.getMessage());
+            }
+//            if (btnStart.getBackground().equals(Color.decode("#30BA30")) || btnPause.getBackground().equals(Color.decode("#FF1E26"))) {
+//                // Ejecutar las operaciones de reset
+//                resetTrains();
+//            }
+//
+//            // Cambiar el cursor de vuelta al normal y actualizar los botones en el EDT
+//            SwingUtilities.invokeLater(() -> {
+//                setCursor(Cursor.getDefaultCursor());
+//                updateButtonStates();
+//            });
         }//GEN-LAST:event_btnResetActionPerformed
 
         private void checkButtonStates() {
@@ -550,7 +586,14 @@
             btnTrain4.setEnabled(enabled);
         }
         
-
+        @Override
+        public void dispose() {
+            // Ensure the connection is closed when the application exits
+            if (connection != null) {
+                connection.close();
+            }
+            super.dispose();
+        }       
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton btnPause;
