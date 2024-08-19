@@ -13,6 +13,10 @@ import com.mycompany.traintrack.client.igu.trains.Train4;
 public class TrainClient extends javax.swing.JFrame {
 
     private pnlTrainMap trainMap;
+    private TrainRunnable train1Runnable;
+    private TrainRunnable train2Runnable;
+    private TrainRunnable train3Runnable;
+    private TrainRunnable train4Runnable;
 
     public TrainClient() {
         initComponents();
@@ -56,7 +60,7 @@ public class TrainClient extends javax.swing.JFrame {
         Train train3 = new Train3(trainMap, Station.Estación_Atlántico, "Train3", 2);
         Train train4 = new Train4(trainMap, Station.Estación_Atlántico, "Train4", 3);
     
-        TrainRunnable train1Runnable = new TrainRunnable(train1, Arrays.asList(
+        train1Runnable = new TrainRunnable(train1, Arrays.asList(
             Station.Belén, Station.Pedregal, Station.Metrópolis, Station.Demasa,
             Station.Pecosa, Station.Pavas_Centro, Station.Jacks, Station.AyA,
             Station.La_Salle, Station.Contraloría, Station.Barrio_Cuba,
@@ -64,9 +68,9 @@ public class TrainClient extends javax.swing.JFrame {
             Station.Estación_Atlántico, Station.UCR, Station.U_Latina,
             Station.Freses, Station.UACA, Station.Tres_Ríos,
             Station.Cartago, Station.Los_Ángeles, Station.Oreamuno, Station.Paraíso),
-            Station.Estación_Atlántico, train2, "20:00");
+            Station.Estación_Atlántico, train2);
     
-        TrainRunnable train2Runnable = new TrainRunnable(train2, Arrays.asList(
+        train2Runnable = new TrainRunnable(train2, Arrays.asList(
             Station.Paraíso, Station.Oreamuno, Station.Los_Ángeles,
             Station.Cartago, Station.Tres_Ríos, Station.UACA, Station.Freses,
             Station.U_Latina, Station.UCR, Station.Estación_Atlántico,
@@ -74,24 +78,21 @@ public class TrainClient extends javax.swing.JFrame {
             Station.Barrio_Cuba, Station.Contraloría, Station.La_Salle, Station.AyA,
             Station.Jacks, Station.Pavas_Centro, Station.Pecosa,
             Station.Demasa, Station.Metrópolis, Station.Pedregal, Station.Belén),
-            Station.Estación_Atlántico, train1, "20:00");
+            Station.Estación_Atlántico, train1);
     
-        TrainRunnable train3Runnable = new TrainRunnable(train3, Arrays.asList(
+        train3Runnable = new TrainRunnable(train3, Arrays.asList(
             Station.Estación_Atlántico, Station.Calle_Blancos, Station.Colima,
             Station.Santa_Rosa, Station.Miraflores, Station.Heredia, Station.San_Francisco,
             Station.San_Joaquín, Station.Río_Segundo, Station.Bulevar_Aeropuerto,
-            Station.Alajuela), Station.Heredia, train4, "18:00");
+            Station.Alajuela), Station.Heredia, train4);
     
-        TrainRunnable train4Runnable = new TrainRunnable(train4, Arrays.asList(
+        train4Runnable = new TrainRunnable(train4, Arrays.asList(
             Station.Estación_Atlántico, Station.Calle_Blancos, Station.Colima,
             Station.Santa_Rosa, Station.Miraflores, Station.Heredia, Station.San_Francisco,
             Station.San_Joaquín, Station.Río_Segundo, Station.Bulevar_Aeropuerto,
-            Station.Alajuela), Station.Heredia, train3, "18:00");
+            Station.Alajuela), Station.Heredia, train3);
     
-        new Thread(train1Runnable).start();
-        new Thread(train2Runnable).start();
-        new Thread(train3Runnable).start();
-        new Thread(train4Runnable).start();
+
     }
 
     
@@ -104,7 +105,7 @@ public class TrainClient extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txaConsole = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
-        btnStop = new javax.swing.JButton();
+        btnPause = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         btnStart = new javax.swing.JButton();
@@ -148,15 +149,15 @@ public class TrainClient extends javax.swing.JFrame {
         jLabel2.setText("Select a train to monitor");
         jLabel2.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
-        btnStop.setBackground(new java.awt.Color(255, 255, 255));
-        btnStop.setFont(new java.awt.Font("Segoe UI Light", 0, 18)); // NOI18N
-        btnStop.setForeground(new java.awt.Color(255, 30, 38));
-        btnStop.setText("Stop");
-        btnStop.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 30, 38)));
-        btnStop.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnStop.addActionListener(new java.awt.event.ActionListener() {
+        btnPause.setBackground(new java.awt.Color(255, 255, 255));
+        btnPause.setFont(new java.awt.Font("Segoe UI Light", 0, 18)); // NOI18N
+        btnPause.setForeground(new java.awt.Color(255, 30, 38));
+        btnPause.setText("Pause");
+        btnPause.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 30, 38)));
+        btnPause.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnPause.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnStopActionPerformed(evt);
+                btnPauseActionPerformed(evt);
             }
         });
 
@@ -253,7 +254,7 @@ public class TrainClient extends javax.swing.JFrame {
                             .addGroup(pnlMenuLayout.createSequentialGroup()
                                 .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(44, 44, 44)
-                                .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnPause, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(pnlMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addGroup(pnlMenuLayout.createSequentialGroup()
@@ -293,7 +294,7 @@ public class TrainClient extends javax.swing.JFrame {
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnlMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnPause, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -377,30 +378,47 @@ public class TrainClient extends javax.swing.JFrame {
         btnTrain4.setForeground(Color.decode("#FF5126"));
     }//GEN-LAST:event_btnTrain1ActionPerformed
 
-    private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
+    private void btnPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPauseActionPerformed
         ClockManager.stopClock();
-        
-        btnStop.setBackground(Color.decode("#FF1E26"));
+        if (train1Runnable != null) train1Runnable.pause();
+        if (train2Runnable != null) train2Runnable.pause();
+        if (train3Runnable != null) train3Runnable.pause();
+        if (train4Runnable != null) train4Runnable.pause();
+
+        btnPause.setBackground(Color.decode("#FF1E26"));
         btnStart.setBackground(Color.decode("#FFFFFF"));
-        btnStop.setForeground(Color.decode("#ffffff"));
+        btnPause.setForeground(Color.decode("#ffffff"));
         btnStart.setForeground(Color.decode("#30BA30"));
-    }//GEN-LAST:event_btnStopActionPerformed
+    }//GEN-LAST:event_btnPauseActionPerformed
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
     // Initialize and start the shared clock
-    ClockManager.initialize(lblReloj);
-    ClockManager.startClock();
+    
     
         // Asegura de que trainMap esté inicializado antes de iniciar los trenes
     if (trainMap != null) {
-        startTrains();
+        ClockManager.initialize(lblReloj);
+        ClockManager.startClock();
+        if (train1Runnable == null || train2Runnable == null || train3Runnable == null || train4Runnable == null) {
+            startTrains();
+            new Thread(train1Runnable).start();
+            new Thread(train2Runnable).start();
+            new Thread(train3Runnable).start();
+            new Thread(train4Runnable).start();
+        } else {
+            System.out.println("intentando Reanudar");
+            train1Runnable.resume();
+            train2Runnable.resume();
+            train3Runnable.resume();
+            train4Runnable.resume();
+        }
     } else {
         System.err.println("trainMap es nulo, no se pueden iniciar los trenes.");
     }
 
-        btnStop.setBackground(Color.decode("#FFFFFF"));
+        btnPause.setBackground(Color.decode("#FFFFFF"));
         btnStart.setBackground(Color.decode("#30BA30"));
-        btnStop.setForeground(Color.decode("#FF1E26"));
+        btnPause.setForeground(Color.decode("#FF1E26"));
         btnStart.setForeground(Color.decode("#ffffff"));
         
     }//GEN-LAST:event_btnStartActionPerformed
@@ -447,13 +465,23 @@ public class TrainClient extends javax.swing.JFrame {
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
         ClockManager.resetClock();
+        if (train1Runnable != null) train1Runnable.reset();
+        if (train2Runnable != null) train2Runnable.reset();
+        if (train3Runnable != null) train3Runnable.reset();
+        if (train4Runnable != null) train4Runnable.reset();
+
+        // Resetear las variables de control
+        train1Runnable = null;
+        train2Runnable = null;
+        train3Runnable = null;
+        train4Runnable = null;
     }//GEN-LAST:event_btnResetActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnPause;
     private javax.swing.JButton btnReset;
     private javax.swing.JButton btnStart;
-    private javax.swing.JButton btnStop;
     private javax.swing.JButton btnTrain1;
     private javax.swing.JButton btnTrain2;
     private javax.swing.JButton btnTrain3;
