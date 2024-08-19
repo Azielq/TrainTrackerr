@@ -10,13 +10,15 @@ public class TrainRunnable implements Runnable {
     private final Train syncTrain;
     private final int regularWaitTime = 500; 
     private final int extendedWaitTime = 2000;
-    
+
     private boolean firstArrivalAtSyncStation = true;  
     private boolean train4FirstPass = true;
     private volatile boolean running = true;
     private volatile boolean paused = false; 
     private final Station initialStation; 
-    private volatile boolean resetRequested = false; // Bandera para manejar el reset
+    private volatile boolean resetRequested = false;
+
+    private static final Object resetLock = new Object();
 
     public TrainRunnable(Train train, List<Station> route, Station syncStation, Train syncTrain) {
         this.train = train;
@@ -27,40 +29,28 @@ public class TrainRunnable implements Runnable {
     }
 
     @Override
-public void run() {
-    System.out.println(train.getName() + " ha iniciado.");
+    public void run() {
+        System.out.println(train.getName() + " ha iniciado.");
 
-    if (train.getName().equals("Train4")) {
-        synchronized (Station.Heredia) {
-            try {
-                System.out.println("Train4 esperando que Train3 llegue a HEREDIA antes de comenzar.");
-                Station.Heredia.wait();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-
-    while (true) {
-        // Verifica si debe detenerse el hilo
-        synchronized (this) {
-            while (paused) {
+        if (train.getName().equals("Train4")) {
+            synchronized (Station.Heredia) {
                 try {
-                    wait(); 
+                    System.out.println("Train4 esperando que Train3 llegue a HEREDIA antes de comenzar.");
+                    Station.Heredia.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
             }
         }
 
-        if (resetRequested || !running) {
-            break; 
-        }
-
-        for (Station station : route) {
-            // Verifica si debe detenerse el hilo antes de moverse
+        while (true) {
             synchronized (this) {
-                while (paused) {
+                // Forzamos una interrupción rápida si se solicita un reset
+                if (resetRequested || shouldStop()) {
+                    break;
+                }
+
+                while (paused || !running) {
                     try {
                         wait(); 
                     } catch (InterruptedException e) {
@@ -69,20 +59,81 @@ public void run() {
                 }
             }
 
-            if (shouldStop() || resetRequested) break;
+            for (Station station : route) {
+                synchronized (this) {
+                    // Forzar una interrupción si se solicita un reset durante el recorrido
+                    if (resetRequested || shouldStop()) {
+                        break;
+                    }
 
-            boolean reached = train.moveToStation(station);
+                    while (paused || !running) {
+                        try {
+                            wait(); 
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
 
-            if (reached) {
-                System.out.println(train.getName() + " ha llegado a " + station.name());
+                boolean reached = train.moveToStation(station);
 
-                if (station == syncStation) {
-                    synchronized (syncStation) {
-                        if (firstArrivalAtSyncStation && train.getName().equals("Train3")) {
-                            System.out.println("Train3 ha llegado a HEREDIA por primera vez. Notificando a Train4 para que comience.");
-                            syncStation.notifyAll();
-                            firstArrivalAtSyncStation = false;  
-                        } else {
+                if (reached) {
+                    System.out.println(train.getName() + " ha llegado a " + station.name());
+
+                    if (station == syncStation) {
+                        synchronized (syncStation) {
+                            if (firstArrivalAtSyncStation && train.getName().equals("Train3")) {
+                                System.out.println("Train3 ha llegado a HEREDIA por primera vez. Notificando a Train4 para que comience.");
+                                syncStation.notifyAll();
+                                firstArrivalAtSyncStation = false;  
+                            } else {
+                                System.out.println(train.getName() + " ha llegado a " + syncStation.name() + ", esperando a " + syncTrain.getName());
+
+                                while (!syncTrain.isAtStation(syncStation)) {
+                                    try {
+                                        syncStation.wait();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                syncStation.notifyAll(); 
+                            }
+                        }
+                    }
+
+                    try {
+                        Thread.sleep(getWaitTimeForStation(station)); 
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+
+            // Reversa, similar al ciclo hacia adelante
+            for (int i = route.size() - 2; i >= 0; i--) {
+                synchronized (this) {
+                    if (resetRequested || shouldStop()) {
+                        break;
+                    }
+
+                    while (paused || !running) {
+                        try {
+                            wait(); 
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
+
+                Station station = route.get(i);
+                boolean reached = train.moveToStation(station);
+
+                if (reached) {
+                    System.out.println(train.getName() + " ha llegado a " + station.name());
+
+                    if (station == syncStation) {
+                        synchronized (syncStation) {
                             System.out.println(train.getName() + " ha llegado a " + syncStation.name() + ", esperando a " + syncTrain.getName());
 
                             while (!syncTrain.isAtStation(syncStation)) {
@@ -96,67 +147,41 @@ public void run() {
                             syncStation.notifyAll(); 
                         }
                     }
-                }
 
-                try {
-                    Thread.sleep(getWaitTimeForStation(station)); 
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }
-
-        for (int i = route.size() - 2; i >= 0; i--) {
-            // Verifica si debe detenerse el hilo antes de moverse en reversa
-            synchronized (this) {
-                while (paused) {
                     try {
-                        wait(); 
+                        Thread.sleep(getWaitTimeForStation(station)); 
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
                 }
             }
+        }
 
-            if (shouldStop() || resetRequested) break;
-
-            Station station = route.get(i);
-            boolean reached = train.moveToStation(station);
-
-            if (reached) {
-                System.out.println(train.getName() + " ha llegado a " + station.name());
-
-                if (station == syncStation) {
-                    synchronized (syncStation) {
-                        System.out.println(train.getName() + " ha llegado a " + syncStation.name() + ", esperando a " + syncTrain.getName());
-
-                        while (!syncTrain.isAtStation(syncStation)) {
-                            try {
-                                syncStation.wait();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        syncStation.notifyAll(); 
-                    }
-                }
-
-                try {
-                    Thread.sleep(getWaitTimeForStation(station)); 
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+        if (resetRequested) {
+            synchronized (resetLock) {
+                resetTrainPosition();
             }
         }
+
+        System.out.println(train.getName() + " ha terminado su recorrido.");
     }
 
-    if (resetRequested) {
+    public synchronized void reset() {
+        paused = true;
+        running = false;
+        resetRequested = true;
+        notifyAll();  // Despertar el hilo si está esperando
         resetTrainPosition();
     }
 
-    System.out.println(train.getName() + " ha terminado su recorrido.");
-}
+    private void resetTrainPosition() {
+        synchronized (resetLock) {
+            train.moveToStation(initialStation);
+            resetRequested = false;
+            paused = true;  // Mantener el tren en pausa después del reset
+            System.out.println(train.getName() + " se ha reseteado a " + initialStation.name());
+        }
+    }
 
     private int getWaitTimeForStation(Station station) {
         if (train.getName().equals("Train4") && train4FirstPass && (station == Station.Estación_Atlántico || station == Station.Alajuela)) {
@@ -182,24 +207,13 @@ public void run() {
 
     public synchronized void resume() {
         paused = false;
+        running = true;
         notifyAll(); 
     }
 
     public synchronized void stop() {
         running = false;
         notifyAll(); 
-    }
-
-    public synchronized void reset() {
-        resetRequested = true; 
-        running = false; 
-        resume(); 
-    }
-
-    private void resetTrainPosition() {
-        train.moveToStation(initialStation); 
-        resetRequested = false; 
-        System.out.println(train.getName() + " se ha reseteado a " + initialStation.name());
     }
 
     private boolean shouldStop() {

@@ -8,7 +8,7 @@ public class ClockManager {
     private static Calendar calendar;
     private static SimpleDateFormat timeFormat;
     private static JLabel clockLabel;
-    private static int accelerationFactor = 70; // Ajusta este valor para acelerar el reloj (1 segundo real = 1 minuto simulación)
+    private static int accelerationFactor = 80; // Ajusta este valor para acelerar el reloj (1 segundo real = 1 minuto simulación)
     private static boolean running = false; // Variable para controlar el ciclo del reloj
     private static Thread clockThread; // Referencia al hilo del reloj
 

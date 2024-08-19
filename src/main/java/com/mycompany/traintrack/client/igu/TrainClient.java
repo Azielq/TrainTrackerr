@@ -465,6 +465,11 @@ public class TrainClient extends javax.swing.JFrame {
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
         ClockManager.resetClock();
+        if (train1Runnable != null) train1Runnable.pause();
+        if (train2Runnable != null) train2Runnable.pause();
+        if (train3Runnable != null) train3Runnable.pause();
+        if (train4Runnable != null) train4Runnable.pause();
+        
         if (train1Runnable != null) train1Runnable.reset();
         if (train2Runnable != null) train2Runnable.reset();
         if (train3Runnable != null) train3Runnable.reset();

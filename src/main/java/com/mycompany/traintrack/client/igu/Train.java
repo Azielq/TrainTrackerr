@@ -43,6 +43,22 @@ public abstract class Train{
         return position[0] == station.getX() && position[1] == station.getY();
     }
 
+    public void setPosition(int x, int y) {
+        this.position[0] = x;
+        this.position[1] = y;
+    }
+
+    public void resetPosition(Station station) {
+        this.position[0] = station.getX();
+        this.position[1] = station.getY();
+        System.out.println(getName() + " ha sido reposicionado a " + station.name());
+    }
+
+    // Método para obtener el índice del tren
+    public int getTrainIndex() {
+        return trainIndex;
+    }
+
     public String getName() {
         return name;
     }
