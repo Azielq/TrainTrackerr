@@ -1,7 +1,7 @@
 package com.mycompany.traintrack.client.app;
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
-import com.mycompany.traintrack.client.igu.Test;
+import com.mycompany.traintrack.client.igu.TrainClient;
 import java.awt.Color;
 import java.awt.Insets;
 import javax.swing.UIManager;
@@ -26,8 +26,9 @@ public class TrainTrack {
         UIManager.put("ScrollBar.thumbInsets", new Insets(2, 2, 2, 2));
         UIManager.put("ScrollBar.track", new Color(0xe0e0e0));
         
+        new TrainClient();
         
-        new Test();
+        System.out.println("Hola esto es un testeo");
 
     }
 }
