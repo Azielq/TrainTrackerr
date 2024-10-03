@@ -402,6 +402,9 @@
               <Properties>
                 <Property name="horizontalAlignment" type="int" value="0"/>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.mycompany.traintrack.igu.SVGImage()"/>
+              </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="lblReloj">
               <Properties>

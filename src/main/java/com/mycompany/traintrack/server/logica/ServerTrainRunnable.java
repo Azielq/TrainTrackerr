@@ -41,135 +41,103 @@ public class ServerTrainRunnable implements Runnable {
         this.initialStation = route.get(0);
     }
 
-    @Override
-    public void run() {
-        System.out.println(train.getName() + " ha iniciado.");
+   @Override
+public void run() {
+    System.out.println(train.getName() + " ha iniciado.");
 
-        if (train.getName().equals("Train4")) {
-            synchronized (Station.Heredia) {
+    // Sincronización inicial si es Train4
+    if (train.getName().equals("Train4")) {
+        synchronized (Station.Heredia) {
+            try {
+                System.out.println("Train4 esperando que Train3 llegue a HEREDIA antes de comenzar.");
+                Station.Heredia.wait();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    while (running) {
+        synchronized (this) {
+            if (resetRequested || shouldStop()) {
+                stop(); // Detener completamente el tren
+                break;
+            }
+
+            while (paused || !running) {
                 try {
-                    System.out.println("Train4 esperando que Train3 llegue a HEREDIA antes de comenzar.");
-                    Station.Heredia.wait();
+                    wait(); 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
             }
         }
 
-        while (running) {
+        for (Station station : route) {
             synchronized (this) {
                 if (resetRequested || shouldStop()) {
+                    stop(); // Detener completamente el tren
                     break;
                 }
 
-                while (paused) {
+                while (paused || !running) {
                     try {
-                        wait(); // Detener la ejecución del tren mientras esté pausado
+                        wait(); 
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
                 }
             }
 
-            for (Station station : route) {
-                synchronized (this) {
-                    if (resetRequested || shouldStop()) {
-                        break;
-                    }
+            boolean reached = moveTrainToStation(station);
 
-                    while (paused) {
-                        try {
-                            wait(); // Asegurarse de que el tren esté pausado correctamente
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
+            if (reached && station == syncStation) {
+                synchronized (syncStation) {
+                    if (firstArrivalAtSyncStation && train.getName().equals("Train3")) {
+                        System.out.println("Train3 ha llegado a HEREDIA por primera vez. Notificando a Train4 para que comience.");
+                        syncStation.notifyAll();
+                        firstArrivalAtSyncStation = false;  
+                    } else {
+                        System.out.println(train.getName() + " ha llegado a " + syncStation.name() + ", esperando a " + syncTrain.getName());
+
+                        while (!syncTrain.isAtStation(syncStation)) {
+                            try {
+                                syncStation.wait();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
+
+                        syncStation.notifyAll(); 
                     }
-                }
-
-                moveTrainToStation(station);
-
-                if (paused || resetRequested) {
-                    break; // Salir del bucle si se pausa o se resetea
-                }
-            }
-
-            // Invertir la ruta para regresar al inicio
-            for (int i = route.size() - 2; i >= 0; i--) {
-                synchronized (this) {
-                    if (resetRequested || shouldStop()) {
-                        break;
-                    }
-
-                    while (paused) {
-                        try {
-                            wait(); // Asegurarse de que el tren esté pausado correctamente
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                }
-
-                Station station = route.get(i);
-                moveTrainToStation(station);
-
-                if (paused || resetRequested) {
-                    break; // Salir del bucle si se pausa o se resetea
                 }
             }
         }
 
-        if (resetRequested) {
-            synchronized (resetLock) {
-                resetTrainPosition();
-            }
-        }
+        // Reversa, similar al ciclo hacia adelante
+        for (int i = route.size() - 2; i >= 0; i--) {
+            synchronized (this) {
+                if (resetRequested || shouldStop()) {
+                    stop(); // Detener completamente el tren
+                    break;
+                }
 
-        System.out.println(train.getName() + " ha terminado su recorrido.");
-    }
-
-    private void moveTrainToStation(Station station) {
-        int startX = train.getPositionX();
-        int startY = train.getPositionY();
-        int endX = station.getX();
-        int endY = station.getY();
-    
-        // Adjust steps and sleep time for faster movement
-        int steps = 100; // Reduce steps for faster movement
-        int sleepTime = 5; // Reduce sleep time for faster movement
-    
-        for (int i = 1; i <= steps; i++) {
-            int newX = startX + (endX - startX) * i / steps;
-            int newY = startY + (endY - startY) * i / steps;
-    
-            sendPositionUpdate(train.getTrainIndex(), newX, newY);
-    
-            try {
-                Thread.sleep(sleepTime); // Faster movement with shorter sleep time
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                while (paused || !running) {
+                    try {
+                        wait(); 
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
             }
-        }
-    
-        // Update train's position to the exact coordinates of the station
-        train.setPosition(endX, endY);
-        sendPositionUpdate(train.getTrainIndex(), endX, endY);
-    
-        System.out.println(train.getName() + " ha llegado a " + station.name());
-        // After moving the train to the station
-        sendCurrentStationUpdate(station);
-    
-        if (station == syncStation) {
-            synchronized (syncStation) {
-                if (firstArrivalAtSyncStation && train.getName().equals("Train3")) {
-                    System.out.println("Train3 ha llegado a HEREDIA por primera vez. Notificando a Train4 para que comience.");
-                    syncStation.notifyAll();
-                    firstArrivalAtSyncStation = false;  
-                } else {
+
+            Station station = route.get(i);
+            boolean reached = moveTrainToStation(station);
+
+            if (reached && station == syncStation) {
+                synchronized (syncStation) {
                     System.out.println(train.getName() + " ha llegado a " + syncStation.name() + ", esperando a " + syncTrain.getName());
 
-                    // After moving the train to the station
-                    sendCurrentStationUpdate(station);
-    
                     while (!syncTrain.isAtStation(syncStation)) {
                         try {
                             syncStation.wait();
@@ -177,18 +145,84 @@ public class ServerTrainRunnable implements Runnable {
                             e.printStackTrace();
                         }
                     }
-    
+
                     syncStation.notifyAll(); 
                 }
             }
         }
-    
-        try {
-            Thread.sleep(getWaitTimeForStation(station)); 
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+    }
+
+    if (resetRequested) {
+        synchronized (resetLock) {
+            resetTrainPosition();
         }
     }
+
+    System.out.println(train.getName() + " ha terminado su recorrido.");
+}
+
+private boolean moveTrainToStation(Station station) {
+    int startX = train.getPositionX();
+    int startY = train.getPositionY();
+    int endX = station.getX();
+    int endY = station.getY();
+    
+    int steps = 100; // Número de pasos para suavizar el movimiento
+    int sleepTime = 5; // Tiempo de espera para suavizar el movimiento
+
+    for (int i = 1; i <= steps; i++) {
+        synchronized (this) {
+            // Verifica si se debe detener el tren
+            if (resetRequested || shouldStop()) {
+                stop(); // Detener completamente el tren
+                return false;
+            }
+
+            // Manejo de la pausa
+            while (paused || !running) {
+                try {
+                    wait(); // Pausar el movimiento si es necesario
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return false;
+                }
+            }
+        }
+
+        int newX = startX + (endX - startX) * i / steps;
+        int newY = startY + (endY - startY) * i / steps;
+
+        // Actualiza la posición del tren
+        train.setPosition(newX, newY);
+        sendPositionUpdate(train.getTrainIndex(), newX, newY);
+
+        try {
+            Thread.sleep(sleepTime); // Movimiento suave
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
+
+    // Asegurarse de que el tren esté en la posición exacta de la estación
+    train.setPosition(endX, endY);
+    sendPositionUpdate(train.getTrainIndex(), endX, endY);
+
+    System.out.println(train.getName() + " ha llegado a " + station.name());
+
+    // Aplicar el tiempo de espera en la estación antes de continuar
+    try {
+        Thread.sleep(getWaitTimeForStation(station)); 
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        return false;
+    }
+
+    // Después de mover el tren a la estación, notificar a la GUI y otras operaciones
+    sendCurrentStationUpdate(station);
+
+    return true; // Indicar que el tren ha llegado con éxito a la estación
+}
 
     public synchronized void updateGUIPosition() {
         SwingUtilities.invokeLater(() -> {
@@ -197,21 +231,21 @@ public class ServerTrainRunnable implements Runnable {
     }
 
     public synchronized void reset() {
-    paused = true;
-    running = false;
-    resetRequested = true;
+        paused = true;
+        running = false;
+        resetRequested = true;
     
-    notifyAll();  // Notificar a todos para asegurarse de que los trenes se detengan
-
-    stopAllMovements(); // Detenemos completamente todos los movimientos
+        // Notificar a cualquier hilo que esté esperando para que se detenga
+        notifyAll();  
     
-    synchronized (resetLock) {
-        resetTrainPosition(); // Reseteamos la posición del tren
+        // Realizar el reset en el EDT para evitar bloquear la UI
+        SwingUtilities.invokeLater(() -> {
+            stopAllMovementsAndReset();
+            resetRequested = false;
+            stop();
+        });
     }
     
-    resetRequested = false;
-    running = false;
-}
     private void sendCurrentStationUpdate(Station station) {
         String message = "STATION_UPDATE " + train.getTrainIndex() + " " + station.name();
         byte[] buffer = message.getBytes();
@@ -223,25 +257,20 @@ public class ServerTrainRunnable implements Runnable {
         }
     }
 
-    
+    private void stopAllMovementsAndReset() {
+        synchronized (resetLock) {
+            stopAllMovements(); // Detener todos los movimientos
+            resetTrainPosition(); // Resetear la posición del tren
+        }
+    }
 
     private void stopAllMovements() {
-        train.stopMovement(); 
+        train.stopMovement(); // Detener todos los movimientos del tren
     }
 
-    public synchronized void stopAndReset() {
-        stop();  // Detenemos el tren
-        resetRequested = true;  // Indicamos que se solicita un reset
-        notifyAll();  // Notificamos a cualquier hilo esperando
-    }
-    
-
-    public synchronized void resetTrainPosition() {
-        synchronized (resetLock) {
-            train.setPosition(initialStation.getX(), initialStation.getY());
-            updateGUIPosition(); // Envía la actualización de posición al cliente
-            System.out.println(train.getName() + " se ha reseteado a " + initialStation.name());
-        }
+    private void resetTrainPosition() {
+        train.setPosition(initialStation.getX(), initialStation.getY()); // Reposicionar el tren
+        System.out.println(train.getName() + " se ha reseteado a " + initialStation.name());
     }
 
     private int getWaitTimeForStation(Station station) {
@@ -278,16 +307,22 @@ public class ServerTrainRunnable implements Runnable {
     public synchronized void stop() {
         running = false;
         notifyAll(); 
+        System.out.println(train.getName() + " ha sido detenido.");
     }
 
     private boolean shouldStop() {
         String currentTime = ClockManager.getCurrentTime();
-        if (train.getName().equals("Train3") || train.getName().equals("Train4")) {
-            return currentTime.compareTo("18:00") >= 0;
+        if ((train.getName().equals("Train3") || train.getName().equals("Train4")) && currentTime.compareTo("18:00") >= 0) {
+            System.out.println(train.getName() + " debe detenerse porque son las " + currentTime);
+            return true;
         }
-        return currentTime.compareTo("20:00") >= 0;
+        if (currentTime.compareTo("20:00") >= 0) {
+            System.out.println(train.getName() + " debe detenerse porque son las " + currentTime);
+            return true;
+        }
+        return false;
     }
-
+    
     private void sendPositionUpdate(int trainIndex, int x, int y) {
         String message = "POSITION_UPDATE " + trainIndex + " " + x + " " + y;
         byte[] buffer = message.getBytes();

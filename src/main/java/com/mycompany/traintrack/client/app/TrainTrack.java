@@ -28,6 +28,7 @@ public class TrainTrack {
         
         new TrainClient();
         
+        System.out.println("Hola esto es un testeo");
 
     }
 }

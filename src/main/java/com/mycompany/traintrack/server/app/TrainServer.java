@@ -53,20 +53,20 @@ public class TrainServer {
         switch (request) {
             case "RESET_TRAINS":
                 resetTrains();
-                return "TRAINS_STOPPED_AND_RESET";
+                return "TRAINS_RESET";
             case "START_TRAINS":
                 startTrains(clientAddress, clientPort);
                 return "TRAINS_STARTED";
             case "PAUSE_TRAINS":
                 pauseTrains();
                 return "TRAINS_PAUSED";
-            case "RESUME_TRAINS": // Nuevo comando para reanudar
+            case "RESUME_TRAINS":
                 resumeTrains();
                 return "TRAINS_RESUMED";
             default:
                 return "UNKNOWN_COMMAND";
         }
-    }
+    }   
 
     private void startTrains(InetAddress clientAddress, int clientPort) {
         List<Station> route1 = List.of(Station.Belén, Station.Pedregal, Station.Metrópolis, Station.Demasa, Station.Pecosa, Station.Pavas_Centro, Station.Jacks, Station.AyA, Station.La_Salle, Station.Contraloría, Station.Barrio_Cuba, Station.Estación_Pacífico, Station.Plaza_Víquez, Station.La_Corte, Station.Estación_Atlántico, Station.UCR, Station.U_Latina, Station.Freses, Station.UACA, Station.Tres_Ríos, Station.Cartago, Station.Los_Ángeles, Station.Oreamuno, Station.Paraíso);
@@ -95,36 +95,22 @@ public class TrainServer {
         new Thread(train4Runnable).start();
     }
 
-    
-
-    public void updateAllTrainPositions() {
-        for (ServerTrainRunnable trainRunnable : trainRunnables) {
-            trainRunnable.resetTrainPosition();  // Resetea la posición de cada tren
-            trainRunnable.updateGUIPosition();   // Envía la actualización al cliente
-        }
-    }
-
-    
     private void resetTrains() {
         for (ServerTrainRunnable runnable : trainRunnables) {
-            runnable.pause();  // Pausa primero
-            runnable.reset();  // Luego resetea cada tren
+            runnable.reset();  // Resetea cada tren
         }
-        updateAllTrainPositions(); // Actualizar todas las posiciones de los trenes
     }
 
+    private void pauseTrains() {
+        for (ServerTrainRunnable runnable : trainRunnables) {
+            runnable.pause();  // Pausa cada tren
+        }
+    }
 
     private void resumeTrains() {
         for (ServerTrainRunnable runnable : trainRunnables) {
-            runnable.resume(); // Reanudar los trenes desde la posición actual
+            runnable.resume();  // Reanuda cada tren
         }
-    }
-    
-    public void pauseTrains() {
-        for (ServerTrainRunnable trainRunnable : trainRunnables) {
-            trainRunnable.pause();
-        }
-        System.out.println("All trains have been paused.");
     }
 
     public static void main(String[] args) {
